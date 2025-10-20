@@ -1,19 +1,20 @@
 import { Text, StyleSheet, TextProps } from 'react-native';
+import { Colors } from '@/constants/theme';
 
-interface BodyTextProps extends TextProps {
+interface TypographyProps extends TextProps {
   color?: string;
 }
 
-export function Title(props: TextProps) {
+export function Title({ color = Colors.light.text, style, ...props }: TypographyProps) {
   return (
     <Text
       {...props}
-      style={[{ fontFamily: 'DMSerifDisplay', fontSize: 32, fontWeight: 'bold' }, props.style]}
+      style={[{ fontFamily: 'DMSerifDisplay', fontSize: 32, color }, style]}
     />
   );
 }
 
-export function BodyText({ color = '#fff', style, ...props }: BodyTextProps) {
+export function BodyText({ color = Colors.light.text, style, ...props }: TypographyProps) {
   return (
     <Text
       {...props}
@@ -24,5 +25,3 @@ export function BodyText({ color = '#fff', style, ...props }: BodyTextProps) {
     />
   );
 }
-
-

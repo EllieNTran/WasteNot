@@ -1,4 +1,4 @@
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/themedView';
 import { BodyText } from '@/components/typography';
 import { Colors } from '@/constants/theme';
 import { Link } from 'expo-router';
@@ -9,11 +9,11 @@ export default function LaunchScreen() {
   return (
     <ThemedView style={styles.container}>
       <Image
-        source={require('../assets/images/light-logo.png')}
+        source={require('../assets/images/lightLogo.png')}
         style={styles.logo}
         contentFit="contain"
       />
-      <BodyText style={styles.message}>
+      <BodyText color={Colors.dark.text} style={styles.message}>
         What’s in your fridge? Snap it, and WasteNot will whip up delicious recipes from what you already have!
       </BodyText>
       <View style={styles.buttonContainer}>
