@@ -1,35 +1,30 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={{ flex: 1 }}>
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={styles.reactLogo}
+    <ThemedView style={styles.container} lightColor="#E2DED2" darkColor="#E2DED2">
+      <Image 
+        source={require('../../assets/images/dark-logo.png')}
+        style={styles.logo}
         resizeMode="contain"
       />
+      <ThemedText type="title">Home</ThemedText>
+      <ThemedText>Welcome to WasteNot!</ThemedText>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
+  logo: {
     height: 178,
     width: 290,
-    alignSelf: 'center',
-  },
+  }
 });
