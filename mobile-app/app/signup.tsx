@@ -1,8 +1,8 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/components/themedView';
 import { Link, useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { StyledButton } from '@/components/StyledButton';
+import { BodyText } from '@/components/typography';
 
 export default function SignupScreen() {
     const router = useRouter();
@@ -13,12 +13,12 @@ export default function SignupScreen() {
     };
 
   return (
-    <ThemedView style={styles.container} darkColor="#2D403E" lightColor="#2D403E">
-      <ThemedText type="title" lightColor="#fff" darkColor="#fff">Sign Up</ThemedText>
+    <ThemedView style={styles.container}>
+      <BodyText>Sign Up</BodyText>
       {/* Add signup form here */}
-      <StyledButton title="Sign up (mock)" onPress={handleSignup} backgroundColor="#556B61" />
-      <Link href="/login" style={styles.link}>
-        <ThemedText type="link">Already have an account? Login</ThemedText>
+      <StyledButton title="Sign Up (mock)" onPress={handleSignup} backgroundColor="#556B61" />
+      <Link href="/signup" style={styles.link}>
+        <BodyText>Already have an account? Login</BodyText>
       </Link>
     </ThemedView>
   );
