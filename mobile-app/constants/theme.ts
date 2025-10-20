@@ -6,39 +6,23 @@
 import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
+const accentColor = '#556B61';
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#E2DED2FF',
+    text: '#000000',
+    background: '#E2DED2',
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: '#2D403E',
+    accent: accentColor,
     tabIconSelected: tintColorLight,
   },
+  dark: {
+    text: '#FFFFFF',
+    background: '#2D403E',
+    tint: tintColorLight,
+    icon: '#E2DED2',
+    accent: accentColor,
+    tabIconSelected: tintColorLight,
+  }
 };
-
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
