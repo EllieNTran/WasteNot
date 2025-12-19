@@ -14,22 +14,23 @@ export function MainView({ children, style, ...props }: ViewProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 74,
+    paddingTop: 72,
     paddingHorizontal: 28,
-    backgroundColor: Colors.light.background, // cream background
+    backgroundColor: Colors.light.background,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   greenEclipse: {
     position: 'absolute',
-    top: -210,
-    left: -28,
+    top: -220,
+    left: '50%',
     width: 450,
     height: 450,
     borderRadius: 360,
-    backgroundColor: Colors.light.icon, // green color
+    backgroundColor: Colors.light.icon,
     transform: [
-      {scaleX: 1.2}
+      { translateX: -225 },
+      { scaleX: 1.2 },
     ],
   },
 });

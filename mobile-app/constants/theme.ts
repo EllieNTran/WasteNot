@@ -1,5 +1,6 @@
 const tintColorLight = '#0a7ea4';
 const accentColor = '#556B61';
+const greyColor = '#989898';
 
 export const Colors = {
   light: {
@@ -8,6 +9,7 @@ export const Colors = {
     tint: tintColorLight,
     icon: '#2D403E',
     accent: accentColor,
+    grey: greyColor,
     tabIconSelected: tintColorLight,
   },
   dark: {
@@ -16,6 +18,7 @@ export const Colors = {
     tint: tintColorLight,
     icon: '#E2DED2',
     accent: accentColor,
+    grey: greyColor,
     tabIconSelected: tintColorLight,
   }
 };

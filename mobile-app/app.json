@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "recipe-generator",
-    "slug": "recipe-generator",
+    "name": "waste-not",
+    "slug": "waste-not",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

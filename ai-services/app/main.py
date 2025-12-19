@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.models.requests import RecipeGenerationRequest, IngredientDetectionRequest
-from app.services.recipe_generation import run_recipe_generation_agent
+from app.services.recipe_generation import run_recipe_generation
 from app.services.ingredient_detection import run_ingredient_detection
 
 app = FastAPI()
@@ -21,7 +21,7 @@ async def generate_recipe(request: RecipeGenerationRequest):
         The generated recipe as a string
     """
     try:
-        response = await run_recipe_generation_agent(request.ingredients, request.dietary_preferences)
+        response = run_recipe_generation(request.ingredients, request.dietary_preferences)
         return {"message": response}
     except Exception as e:
         return {"error": str(e)}

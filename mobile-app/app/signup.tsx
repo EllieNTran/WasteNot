@@ -1,7 +1,7 @@
 import { ThemedView } from '@/components/themedView';
 import { Link, useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { StyledButton } from '@/components/StyledButton';
+import { StyledButton } from '@/components/styledButton';
 import { BodyText } from '@/components/typography';
 
 export default function SignupScreen() {
@@ -9,7 +9,7 @@ export default function SignupScreen() {
 
     const handleSignup = () => {
       // Mock signup logic
-      router.replace('/(tabs)');
+      router.replace('/home');
     };
 
   return (
