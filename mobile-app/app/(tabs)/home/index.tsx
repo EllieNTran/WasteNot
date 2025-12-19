@@ -3,19 +3,18 @@ import { Colors } from '@/constants/theme';
 import { MainView } from '@/components/mainView';
 import { BodyText, Title } from '@/components/typography';
 
-export default function IngredientsScreen() {
+export default function HomeScreen() {
   return (
     <MainView style={styles.container}>
-      <Title color={Colors.dark.text}>Ingredients</Title>
+      <BodyText color={Colors.dark.icon}>Good Afternoon</BodyText>
+      <Title color={Colors.dark.text}>Jane Doe</Title>
     </MainView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
+    alignItems: 'flex-start',
   },
   logo: {
     height: 178,
