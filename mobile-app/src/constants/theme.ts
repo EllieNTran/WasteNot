@@ -1,6 +1,9 @@
 const tintColorLight = '#0a7ea4';
 const accentColor = '#556B61';
 const greyColor = '#989898';
+const darkGreyColor = '#797979';
+const lightBeigeColor = '#FAF9F4';
+const secondaryGreenColor = '#556B61';
 
 export const Colors = {
   light: {
@@ -11,6 +14,9 @@ export const Colors = {
     accent: accentColor,
     grey: greyColor,
     tabIconSelected: tintColorLight,
+    lightBeige: lightBeigeColor,
+    secondaryGreen: secondaryGreenColor,
+    darkGrey: darkGreyColor,
   },
   dark: {
     text: '#FFFFFF',

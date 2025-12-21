@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Text, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
@@ -36,13 +36,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 75,
-    padding: 16,
+    padding: 14,
     backgroundColor: Colors.dark.text,
     borderRadius: 12,
-    borderWidth: 0.2,
+    borderWidth: 0.5,
     borderColor: Colors.light.icon,
   },
   iconContainer: {
+    marginLeft: -2,
     marginRight: 12,
     backgroundColor: Colors.light.background,
     padding: 10,
@@ -52,12 +53,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   text: {
-    fontSize: 16,
     fontWeight: '500',
   },
   caption: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '300',
-    color: Colors.dark.icon,
+    color: Colors.dark.grey,
   },
 });

@@ -18,7 +18,7 @@ export function Subtitle({ color = Colors.light.text, style, ...props }: Typogra
   return (
     <Text
       {...props}
-      style={[{ fontFamily: 'DMSerifDisplay', fontSize: 20, color }, style]}
+      style={[{ fontFamily: 'DMSerifDisplay', fontSize: 22, color }, style]}
     />
   );
 }
@@ -28,7 +28,7 @@ export function BodyText({ color = Colors.light.text, style, ...props }: Typogra
     <Text
       {...props}
       style={[
-        { fontFamily: 'Nunito', fontSize: 16, color },
+        { fontFamily: 'Nunito', fontSize: 18, color },
         style,
       ]}
     />

@@ -7,6 +7,8 @@ import { Icon } from '@/src/components/icon';
 import { Link } from 'expo-router';
 import AddIcon from '@/src/assets/icons/add.png';
 import CameraIcon from '@/src/assets/icons/camera.png';
+import VegetableIcon from '@/src/assets/icons/vegetable.png';
+import IngredientCard from '@/src/components/ingredientCard';
 
 export default function IngredientsScreen() {
   return (
@@ -25,6 +27,9 @@ export default function IngredientsScreen() {
         </Link>
       </View>
       <SearchBar text="Search ingredients..." />
+      <View style={styles.ingredientsContainer}>
+        <IngredientCard ingredient="Tomatoes" iconSource={VegetableIcon} quantity='8 pieces' expirationDate="2024-07-01" />
+      </View>
     </MainView>
   );
 }
@@ -52,4 +57,8 @@ const styles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
+  ingredientsContainer: {
+    marginTop: 18,
+    width: '100%',
+  }
 });
