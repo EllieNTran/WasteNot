@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, PressableProps, View, ImageSourcePropType } from 'react-native';
+import { Pressable, StyleSheet, PressableProps, View, ImageSourcePropType, ViewStyle, TextStyle, StyleProp, PressableStateCallbackType } from 'react-native';
 import { BodyText } from './typography';
 import { Icon } from './icon';
 import { Colors } from '@/src/constants/theme';
 
-interface StyledButtonProps extends PressableProps {
+interface StyledButtonProps extends Omit<PressableProps, 'style'> {
   title: string;
   backgroundColor?: string;
   textColor?: string;
@@ -11,6 +11,9 @@ interface StyledButtonProps extends PressableProps {
   iconSize?: number;
   hasBorder?: boolean;
   borderColor?: string;
+  buttonStyle?: ViewStyle;
+  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function StyledButton({ 
@@ -21,20 +24,27 @@ export function StyledButton({
   iconSize = 20,
   hasBorder = false,
   borderColor = Colors.light.text,
+  buttonStyle,
+  textStyle,
+  style,
   ...props 
 }: StyledButtonProps) {
   return (
     <Pressable 
       {...props} 
-      style={[
-        styles.button, 
+      style={(state: PressableStateCallbackType) => [
+        styles.button,
         { backgroundColor },
-        hasBorder && { borderWidth: 1, borderColor }
+        hasBorder ? { borderWidth: 1, borderColor } : {},
+        buttonStyle,
+        typeof style === 'function' ? style(state) : style,
       ]}
     >
       <View style={styles.content}>
         {iconSource && <Icon source={iconSource} size={iconSize} style={styles.icon} />}
-        <BodyText color={textColor} style={styles.text}>{title}</BodyText>
+        <BodyText color={textColor} style={[styles.text, textStyle]}>
+          {title}
+        </BodyText>
       </View>
     </Pressable>
   );

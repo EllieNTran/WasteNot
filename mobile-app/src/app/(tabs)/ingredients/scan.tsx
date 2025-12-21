@@ -60,7 +60,6 @@ export default function ScanScreen() {
     if (!photo) return;
 
     const fileName = photo.split('/').pop() || 'photo.jpg';
-    // Determine the correct MIME type from the file extension
     const extension = fileName.split('.').pop()?.toLowerCase();
     let fileType = 'image/jpeg';
     if (extension === 'png') fileType = 'image/png';
