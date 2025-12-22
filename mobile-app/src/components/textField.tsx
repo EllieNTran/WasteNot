@@ -1,43 +1,44 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Pressable, TextInputProps } from 'react-native';
+import { View, TextInput, StyleSheet, Pressable, TextInputProps, TextStyle } from 'react-native';
 import { BodyText } from './typography';
 import { Colors } from '@/src/constants/theme';
 import { Icon } from './icon';
-import EyeIcon from '@/src/assets/icons/eye.png';
-import EyeOffIcon from '@/src/assets/icons/eyeOff.png';
+import { Eye, EyeOff } from '@/src/assets/icons';
 
 interface TextFieldProps extends TextInputProps {
   label: string;
   isMasked?: boolean;
   error?: string;
+  labelStyle?: TextStyle;
 }
 
 export const TextField: React.FC<TextFieldProps> = ({
   label,
   isMasked = false,
   error,
+  labelStyle,
   ...props
 }) => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isMaskedVisible, setIsMaskedVisible] = useState(false);
 
   return (
     <View style={styles.container}>
-      <BodyText color={Colors.light.darkGrey} style={styles.label}>
+      <BodyText color={Colors.light.darkGrey} style={[styles.label, labelStyle]}>
         {label}
       </BodyText>
       <View style={[styles.inputContainer, error && styles.inputError]}>
         <TextInput
           style={styles.input}
-          secureTextEntry={isMasked && !isPasswordVisible}
+          secureTextEntry={isMasked && !isMaskedVisible}
           placeholderTextColor={Colors.light.grey}
           {...props}
         />
         {isMasked && (
           <Pressable
-            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            onPress={() => setIsMaskedVisible(!isMaskedVisible)}
             style={styles.eyeButton}
           >
-            <Icon source={isPasswordVisible ? EyeIcon : EyeOffIcon} size={18} />
+            <Icon source={isMaskedVisible ? Eye : EyeOff} size={18} />
           </Pressable>
         )}
       </View>
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: Colors.light.text,
+    borderRadius: 10,
   },
   eyeButton: {
     paddingHorizontal: 10,

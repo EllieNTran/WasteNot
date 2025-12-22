@@ -3,18 +3,14 @@ import React from 'react';
 import { View, Dimensions } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { Icon } from '@/src/components/icon';
-import HomeIcon from '@/src/assets/icons/home.png';
-import LeafIcon from '@/src/assets/icons/leaf.png';
-import WandIcon from '@/src/assets/icons/wand.png';
-import PastIcon from '@/src/assets/icons/past.png';
-import CartIcon from '@/src/assets/icons/cart.png';
+import { Home, Leaf, Wand, Past, Cart } from '@/src/assets/icons';
 
 const icons = {
-  home: HomeIcon,
-  leaf: LeafIcon,
-  wand: WandIcon,
-  past: PastIcon,
-  cart: CartIcon,
+  home: Home,
+  leaf: Leaf,
+  wand: Wand,
+  past: Past,
+  cart: Cart,
 };
 
 const { width: screenWidth } = Dimensions.get('window');

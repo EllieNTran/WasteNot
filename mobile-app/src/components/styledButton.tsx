@@ -13,12 +13,12 @@ interface StyledButtonProps extends Omit<PressableProps, 'style'> {
   borderColor?: string;
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
 }
 
 export function StyledButton({ 
   title, 
-  backgroundColor = '#4CAF50', 
+  backgroundColor = Colors.dark.background, 
   textColor = '#fff',
   iconSource,
   iconSize = 20,

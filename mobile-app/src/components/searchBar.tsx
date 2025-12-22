@@ -1,7 +1,7 @@
 import { Pressable, Image, StyleSheet, PressableProps } from 'react-native';
 import { BodyText } from './typography';
 import { Colors } from '@/src/constants/theme';
-import SearchIcon from '@/src/assets/icons/search.png';
+import { Search } from '@/src/assets/icons';
 
 interface SearchBarProps extends PressableProps {
   text: string;
@@ -13,7 +13,7 @@ export function SearchBar({ text, backgroundColor = Colors.dark.text, textColor 
   return (
     <Pressable {...props} style={[styles.searchBar, { backgroundColor }]}>
       <BodyText style={[styles.searchBarText, { color: textColor }]}>{text}</BodyText>
-      <Image source={SearchIcon} style={styles.icon}/>
+      <Image source={Search} style={styles.icon}/>
     </Pressable>
   );
 }

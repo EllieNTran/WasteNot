@@ -5,30 +5,28 @@ import { BodyText, Title } from '@/src/components/typography';
 import { SearchBar } from '@/src/components/searchBar';
 import { Icon } from '@/src/components/icon';
 import { Link } from 'expo-router';
-import AddIcon from '@/src/assets/icons/add.png';
-import CameraIcon from '@/src/assets/icons/camera.png';
-import VegetableIcon from '@/src/assets/icons/vegetable.png';
+import { Add, Camera, Vegetable } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
 
 export default function IngredientsScreen() {
   return (
     <MainView style={styles.container}>
       <View style={styles.titleContainer}>
-        <Link href="/ingredients/scan" asChild>
+        <Link href="/ingredients/add" asChild>
           <Pressable>
-            <Icon source={AddIcon} style={styles.addIcon}/>
+            <Icon source={Add} style={styles.addIcon}/>
           </Pressable>
         </Link> 
         <Title color={Colors.dark.text}>Ingredients</Title>
         <Link href="/ingredients/scan" asChild>
           <Pressable>
-            <Icon source={CameraIcon} style={styles.cameraIcon}/>
+            <Icon source={Camera} style={styles.cameraIcon}/>
           </Pressable>
         </Link>
       </View>
       <SearchBar text="Search ingredients..." />
       <View style={styles.ingredientsContainer}>
-        <IngredientCard ingredient="Tomatoes" iconSource={VegetableIcon} quantity='8 pieces' expirationDate="2024-07-01" />
+        <IngredientCard ingredient="Tomatoes" iconSource={Vegetable} quantity='8 pieces' expirationDate="2024-07-01" />
       </View>
     </MainView>
   );

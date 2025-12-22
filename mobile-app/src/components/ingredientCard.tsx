@@ -2,10 +2,7 @@ import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '../constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
-import BlackClockIcon from '../assets/icons/blackClock.png';
-import CalendarIcon from '../assets/icons/calendar.png';
-import EditIcon from '../assets/icons/edit.png';
-import BinIcon from '../assets/icons/bin.png';
+import { BlackClock, GreenCalendar, Edit, Bin } from '@/src/assets/icons';
 
 interface IngredientCardProps {
   ingredient: string;
@@ -26,17 +23,17 @@ export default function IngredientCard({ ingredient, iconSource, quantity, expir
           <BodyText style={styles.quantityText}>Quantity: {quantity}</BodyText>
         </View>
         <View style={styles.actionsContainer}>
-          <Icon source={EditIcon} size={20} />
-          <Icon source={BinIcon} size={20} />
+          <Icon source={Edit} size={20} />
+          <Icon source={Bin} size={20} />
         </View>
       </View>
       <View style={styles.expirationContainer}>
         <View style={styles.expirationInfo}>
-          <Icon source={CalendarIcon} size={15} />
+          <Icon source={GreenCalendar} size={15} />
           <BodyText style={styles.expirationText}>Expires: {expirationDate}</BodyText>
         </View>
         <View style={styles.remainingDaysContainer}>
-          <Icon source={BlackClockIcon} size={13} />
+          <Icon source={BlackClock} size={13} />
           <BodyText style={styles.remainingDaysText}>4 days left</BodyText>
         </View>
       </View>

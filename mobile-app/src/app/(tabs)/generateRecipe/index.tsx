@@ -5,8 +5,8 @@ import { MainView } from '@/src/components/mainView';
 import { BodyText, Subtitle, Title } from '@/src/components/typography';
 import { StyledButton } from '@/src/components/styledButton';
 import { Icon } from '@/src/components/icon';
-import WhiteWandIcon from '@/src/assets/icons/whiteWand.png';
-import DownArrow from '@/src/assets/icons/downArrow.png';
+import { WhiteWand, DownArrow } from '@/src/assets/icons';
+import { OptionButton } from '@/src/components/optionButton';
 
 // Mock ingredients data - replace with actual data
 const mockIngredients = [
@@ -57,7 +57,7 @@ export default function GenerateRecipeScreen() {
       </BodyText>
 
       <View style={styles.section}>
-        <Subtitle color={Colors.dark.text} style={styles.sectionTitle}>Recipe Preferences</Subtitle>
+        <Subtitle color={Colors.light.text} style={styles.sectionTitle}>Recipe Preferences</Subtitle>
         <View style={styles.card}>
           <BodyText style={styles.cardTitle}>Selected Ingredients</BodyText>
           <ScrollView 
@@ -136,7 +136,7 @@ export default function GenerateRecipeScreen() {
         title="Generate Recipe"
         buttonStyle={styles.generateButton}
         textStyle={styles.generateButtonText}
-        iconSource={WhiteWandIcon}
+        iconSource={WhiteWand}
       />
       </View>
 
@@ -196,39 +196,6 @@ export default function GenerateRecipeScreen() {
   );
 }
 
-function OptionButton({
-  label,
-  subLabel,
-  selected,
-  onPress,
-}: {
-  label: string;
-  subLabel?: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.option,
-        selected && styles.optionSelected,
-      ]}
-    >
-      <BodyText style={[styles.optionText, selected && styles.optionTextSelected]}>
-        {label}
-      </BodyText>
-      {subLabel && (
-        <BodyText
-          style={[styles.subText, selected && styles.optionTextSelected]}
-        >
-          {subLabel}
-        </BodyText>
-      )}
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -244,7 +211,7 @@ const styles = StyleSheet.create({
   section: {
     width: '100%',
     paddingHorizontal: 20,
-    marginTop: 24,
+    marginTop: 56,
     alignItems: 'center',
   },
   sectionTitle: {

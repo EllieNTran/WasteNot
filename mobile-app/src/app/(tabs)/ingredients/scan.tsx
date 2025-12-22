@@ -3,11 +3,7 @@ import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title, Subtitle } from '@/src/components/typography';
 import { Link } from 'expo-router';
-import BackIcon from '@/src/assets/icons/backArrow.png';
-import CameraIcon from '@/src/assets/icons/camera.png';
-import GreenCameraIcon from '@/src/assets/icons/greenCamera.png';
-import GalleryIcon from '@/src/assets/icons/gallery.png';
-import KeyboardIcon from '@/src/assets/icons/keyboard.png';
+import { BackArrow, Camera, GreenCamera, Gallery, Keyboard } from '@/src/assets/icons';
 import { Icon } from '@/src/components/icon';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
@@ -15,7 +11,7 @@ import Card from '@/src/components/card';
 import * as ImagePicker from 'expo-image-picker';
 import { useUploadImage } from '../../../services/ingredientsConnectors';
 
-export default function ScanScreen() {
+export default function ScanIngredientsScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -101,7 +97,7 @@ export default function ScanScreen() {
         <View style={styles.titleContainer}>
           <Link href="/ingredients" asChild>
             <Pressable style={styles.backButton}>
-              <Icon source={BackIcon} size={30} />
+              <Icon source={BackArrow} size={30} />
             </Pressable>
           </Link>
           <View style={styles.titleWrapper}>
@@ -116,7 +112,7 @@ export default function ScanScreen() {
 
       {!permission.granted ? (
         <Pressable style={styles.permissionButton} onPress={requestPermission}>
-          <Icon source={GreenCameraIcon} size={120} />
+          <Icon source={GreenCamera} size={120} />
           <BodyText color={Colors.light.text} style={styles.instruction}>
             Take a Photo
           </BodyText>
@@ -130,7 +126,7 @@ export default function ScanScreen() {
             <CameraView style={styles.camera} facing="back" ref={cameraRef}>
               <View style={styles.cameraOverlay}>
                 <Pressable style={styles.captureButton} onPress={handleCapture}>
-                  <Icon source={CameraIcon} size={40} />
+                  <Icon source={Camera} size={40} />
                 </Pressable>
               </View>
             </CameraView>
@@ -143,13 +139,13 @@ export default function ScanScreen() {
           Or choose from:
         </Subtitle>
         <Card 
-          iconSource={GalleryIcon} 
+          iconSource={Gallery} 
           text="Upload From Gallery" 
           caption="Select existing photos" 
           onPress={pickImage} 
         />
         <Card 
-          iconSource={KeyboardIcon} 
+          iconSource={Keyboard} 
           text="Enter Manually" 
           caption="Type your ingredients" 
           onPress={() => {}} 

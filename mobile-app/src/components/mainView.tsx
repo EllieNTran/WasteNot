@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   greenEclipse: {
     position: 'absolute',
-    top: -220,
+    top: -245,
     alignSelf: 'center',
     width: 475,
     height: 475,
