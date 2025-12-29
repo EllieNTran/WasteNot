@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register --inspect dist/server/app.js",
-    "dev": "ts-node-dev src/server/app.ts"
+    "start": "npm run dev",
+    "dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register src/server/app.ts",
   }
 }
