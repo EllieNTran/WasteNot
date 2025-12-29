@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/src/utils/fetch';
+import { supabase } from '@/src/lib/supabase';
 
 interface UploadImageResponse {
   fileId: string;
@@ -26,6 +27,9 @@ const convertBase64ToBlob = (base64Data: string): Blob => {
 };
 
 const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
+  // Get current user's session token
+  const { data: { session } } = await supabase.auth.getSession();
+  
   const formData = new FormData();
   
   // Check if URI is a base64 data URL (web) or file path (native)
@@ -43,6 +47,9 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
 
   const response = await apiFetch('/api/storage/upload-image', {
     method: 'POST',
+    headers: session?.access_token ? {
+      'Authorization': `Bearer ${session.access_token}`,
+    } : {},
     body: formData,
   });
 
