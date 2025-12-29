@@ -23,6 +23,6 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run dev",
-    "dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register src/server/app.ts",
+    "dev": "ts-node-dev -r dotenv/config -r tsconfig-paths/register src/server/app.ts"
   }
 }
