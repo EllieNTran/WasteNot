@@ -1,19 +1,24 @@
-from google.cloud import storage
-
+from supabase import create_client, Client
 from app.settings import settings
 
-client = storage.Client()
+client: Client = create_client(settings.supabase_url, settings.supabase_anon_key)
 
 
 def upload_object_to_bucket(source_file, destination_blob_name):
     """
     source_file (str): Path to the local file to be uploaded.
-    destination_blob_name (str): Name of the object in the GCS bucket.
+    destination_blob_name (str): Name of the object in the Supabase bucket.
     """
 
     try:
-        blob = client.bucket(settings.bucket_name).blob(destination_blob_name)
-        blob.upload_from_filename(source_file)
+        with open(source_file, 'rb') as f:
+            file_data = f.read()
+        
+        response = client.storage.from_(settings.bucket_name).upload(
+            path=destination_blob_name,
+            file=file_data,
+            file_options={"content-type": "image/jpeg"}
+        )
 
         print(f'File {source_file} uploaded to {settings.bucket_name}/{destination_blob_name}')
     
@@ -28,8 +33,10 @@ def retrieve_object_from_bucket(object_name, destination_file_path):
     """
     
     try:
-        blob = client.bucket(settings.bucket_name).blob(object_name)
-        blob.download_to_filename(destination_file_path)
+        response = client.storage.from_(settings.bucket_name).download(object_name)
+        
+        with open(destination_file_path, 'wb') as f:
+            f.write(response)
 
         print(f"Object '{object_name}' retrieved and saved to '{destination_file_path}'.")
 

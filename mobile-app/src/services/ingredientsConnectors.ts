@@ -27,8 +27,18 @@ const convertBase64ToBlob = (base64Data: string): Blob => {
 };
 
 const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
+  console.log('Starting upload process...');
+  
   // Get current user's session token
-  const { data: { session } } = await supabase.auth.getSession();
+  console.log('Getting user session...');
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  
+  if (sessionError) {
+    console.error('Session error:', sessionError);
+    throw new Error(`Session error: ${sessionError.message}`);
+  }
+  
+  console.log('Session obtained:', session ? 'Yes' : 'No');
   
   const formData = new FormData();
   
@@ -45,21 +55,32 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
     } as any);
   }
 
-  const response = await apiFetch('/api/storage/upload-image', {
-    method: 'POST',
-    headers: session?.access_token ? {
-      'Authorization': `Bearer ${session.access_token}`,
-    } : {},
-    body: formData,
-  });
+  console.log('Sending request to API...');
+  
+  try {
+    const response = await apiFetch('/api/storage/upload-image', {
+      method: 'POST',
+      headers: session?.access_token ? {
+        'Authorization': `Bearer ${session.access_token}`,
+      } : {},
+      body: formData,
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Upload failed:', errorText);
-    throw new Error(`Upload failed: ${errorText}`);
+    console.log('Response received:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Upload failed:', errorText);
+      throw new Error(`Upload failed: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('Upload successful:', result);
+    return result;
+  } catch (error) {
+    console.error('Upload request error:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 export const useUploadImage = (options?: any) =>

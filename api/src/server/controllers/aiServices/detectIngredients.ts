@@ -21,7 +21,6 @@ const controller = async (req: Request<DetectIngredientsRequestParams, any, Dete
         body: { ingredients },
       }
     }
-    // If ingredients is explicitly null or undefined, return 404
     if (ingredients === null || ingredients === undefined) {
       return {
         status: 404,

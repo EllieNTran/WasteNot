@@ -2,12 +2,13 @@ import { putObject } from '../../connectors/storage'
 import crypto from 'crypto'
 import fs from 'fs'
 import logger from '../../logger'
-import { lookup } from 'mime-types'
+import { extension } from 'mime-types'
 
 const uploadImage = async (file: Express.Multer.File, authToken?: string, userId?: string): Promise<string | null> => {
     const fileId = crypto.randomUUID()
-    const extension = lookup(file.mimetype) as string // mime-types lookup can return false, which is not handled here.
-    const imagePath = userId ? `${userId}/${fileId}.${extension}` : `${fileId}.${extension}`
+    // Get extension from mimetype, fallback to 'jpg' if not found
+    const ext = extension(file.mimetype) || 'jpg'
+    const imagePath = userId ? `${userId}/${fileId}.${ext}` : `${fileId}.${ext}`
     logger.info('Uploading file', { file: file.filename, path: imagePath })
 
     const putResult = await putObject({

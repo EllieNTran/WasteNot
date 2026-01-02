@@ -3,7 +3,7 @@ import os
 from inference_sdk import InferenceHTTPClient
 
 from app.settings import settings
-from app.connectors.gcs import retrieve_object_from_bucket
+from app.connectors.storage import retrieve_object_from_bucket
 
 client = InferenceHTTPClient(
     api_url="https://serverless.roboflow.com",
