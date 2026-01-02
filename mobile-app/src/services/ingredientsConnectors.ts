@@ -58,7 +58,7 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
   console.log('Sending request to API...');
   
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+  const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
   
   try {
     const response = await apiFetch('ai/detect-ingredients', {
