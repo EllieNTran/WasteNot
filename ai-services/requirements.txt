@@ -1,4 +1,4 @@
-fastapi==0.118.0
+fastapi[standard]==0.118.0
 inference-sdk==0.58.2
 langgraph==0.6.8
 langchain-google-genai==2.1.12
