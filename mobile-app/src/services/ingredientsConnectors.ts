@@ -57,6 +57,9 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
 
   console.log('Sending request to API...');
   
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+  
   try {
     const response = await apiFetch('/api/storage/upload-image', {
       method: 'POST',
@@ -64,8 +67,10 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
         'Authorization': `Bearer ${session.access_token}`,
       } : {},
       body: formData,
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
     console.log('Response received:', response.status);
 
     if (!response.ok) {
@@ -78,6 +83,13 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
     console.log('Upload successful:', result);
     return result;
   } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Upload timed out after 30 seconds');
+      throw new Error('Upload request timed out. Please check your connection and try again.');
+    }
+    
     console.error('Upload request error:', error);
     throw error;
   }

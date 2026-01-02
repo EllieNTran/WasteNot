@@ -6,7 +6,6 @@ import { extension } from 'mime-types'
 
 const uploadImage = async (file: Express.Multer.File, authToken?: string, userId?: string): Promise<string | null> => {
     const fileId = crypto.randomUUID()
-    // Get extension from mimetype, fallback to 'jpg' if not found
     const ext = extension(file.mimetype) || 'jpg'
     const imagePath = userId ? `${userId}/${fileId}.${ext}` : `${fileId}.${ext}`
     logger.info('Uploading file', { file: file.filename, path: imagePath })
@@ -20,7 +19,7 @@ const uploadImage = async (file: Express.Multer.File, authToken?: string, userId
     })
 
     if (!putResult) return null
-    return fileId
+    return imagePath
 }
 
 export default uploadImage

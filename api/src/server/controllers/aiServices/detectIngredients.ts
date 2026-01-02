@@ -1,36 +1,51 @@
-import { Request } from 'express'
-import { detectIngredients } from 'src/services/aiServices'
-import schemas from 'src/validation/aiServicesSchemas'
-import { ControllerResult } from '../withExpress'
+import { Request } from 'express';
+import { detectIngredients } from 'src/services/aiServices';
+import { ControllerResult } from '../withExpress';
 
-interface DetectIngredientsRequestBody {
-  imagePath: string;
+declare module 'express' {
+  export interface Request {
+    file?: Express.Multer.File;
+  }
 }
 
-interface DetectIngredientsRequestParams {}
-
-const controller = async (req: Request<DetectIngredientsRequestParams, any, DetectIngredientsRequestBody>): Promise<ControllerResult> => {
-  const { imagePath } = req.body
-
-  const { error, value } = schemas.detectIngredients.validate({ imagePath })
-  if (error === undefined) {
-    const ingredients = await detectIngredients(value.imagePath)
-    if (ingredients) {
-      return {
-        status: 200,
-        body: { ingredients },
-      }
-    }
-    if (ingredients === null || ingredients === undefined) {
-      return {
-        status: 404,
-      }
-    }
-    throw new Error(`Unexpected value of ingredients: ${ingredients}`)
+const controller = async (req: Request): Promise<ControllerResult> => {
+  console.log('Received detect ingredients request', req);
+  if (!req.file) {
+    return {
+      status: 400,
+      body: {
+        message: 'File is required',
+      },
+    };
   }
+
+  const authHeader = req.headers.authorization;
+  const authToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined;
+
+  let userId: string | undefined;
+  if (authToken) {
+    try {
+      const payload = JSON.parse(Buffer.from(authToken.split('.')[1], 'base64').toString());
+      userId = payload.sub;
+    } catch (error) {
+      console.error('Failed to decode JWT:', error);
+    }
+  }
+
+  const detectedIngredients = await detectIngredients(req.file, authToken, userId);
+  if (detectedIngredients === null) {
+    return {
+      status: 500,
+      body: {
+        message: 'Failed to detect ingredients',
+      },
+    };
+  }
+
   return {
-    status: 400,
-  }
-}
+    status: 201,
+    body: { detectedIngredients },
+  };
+};
 
-export default controller
+export default controller;

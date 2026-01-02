@@ -1,10 +1,8 @@
 import { Router } from 'express'
 import aiServices from './controllers/aiServices'
-import storage from './controllers/storage'
 
 const routes = Router()
 
-routes.post('/ai/detect-ingredients', aiServices.detectIngredients)
-routes.post('/storage/upload-image', ...storage.uploadImage)
+routes.post('/ai/detect-ingredients', ...aiServices.detectIngredients)
 
 export default routes

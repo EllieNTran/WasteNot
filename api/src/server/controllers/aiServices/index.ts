@@ -1,6 +1,7 @@
 import detectIngredients from './detectIngredients'
 import withExpress from '../withExpress'
+import detectIngredientsMiddleware from './detectIngredientsMiddleware'
 
 export default {
-  detectIngredients: withExpress(detectIngredients),
+  detectIngredients: [detectIngredientsMiddleware, withExpress(detectIngredients)],
 }

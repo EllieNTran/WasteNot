@@ -1,11 +1,19 @@
 import axios from 'axios';
+import logger from '../../logger'
+import uploadImage from 'src/services/storage/uploadImage';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
-const detectIngredients = async (imagePath: string): Promise<string | null> => {
+const detectIngredients = async (file: Express.Multer.File, authToken?: string, userId?: string): Promise<string | null> => {
+  const uploadedFilePath = await uploadImage(file, authToken, userId);
+  if (!uploadedFilePath) {
+    logger.error('Failed to upload image for ingredient detection');
+    return null;
+  }
+
   try {
     const response = await axios.post<{ error?: string; message: string }>(`${AI_SERVICE_URL}/detect-ingredients`, {
-      image: imagePath
+      image: uploadedFilePath
     });
 
     if (response.data.error) {
@@ -15,8 +23,7 @@ const detectIngredients = async (imagePath: string): Promise<string | null> => {
     return response.data.message;
   } catch (error: any) {
     console.error('Error detecting ingredients:', error.message);
-    // Depending on the desired behavior, you might want to return null or re-throw a more specific error
-    return null; // Or throw new Error(`Failed to detect ingredients: ${error.message}`);
+    return null
   }
 }
 
