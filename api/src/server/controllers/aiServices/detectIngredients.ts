@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { detectIngredients } from 'src/services/aiServices';
 import { ControllerResult } from '../withExpress';
+import logger from 'src/logger';
 
 declare module 'express' {
   export interface Request {
@@ -33,6 +34,7 @@ const controller = async (req: Request): Promise<ControllerResult> => {
   }
 
   const detectedIngredients = await detectIngredients(req.file, authToken, userId);
+  logger.debug('Detected ingredients', { detectedIngredients });
   if (detectedIngredients === null) {
     return {
       status: 500,

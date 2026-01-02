@@ -1,7 +1,7 @@
-import { putObject } from '../../connectors/storage'
+import { putObject } from 'src/connectors/storage'
 import crypto from 'crypto'
 import fs from 'fs'
-import logger from '../../logger'
+import logger from 'src/logger'
 import { extension } from 'mime-types'
 
 const uploadImage = async (file: Express.Multer.File, authToken?: string, userId?: string): Promise<string | null> => {

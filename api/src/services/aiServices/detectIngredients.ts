@@ -1,5 +1,5 @@
 import axios from 'axios';
-import logger from '../../logger'
+import logger from 'src/logger'
 import uploadImage from 'src/services/storage/uploadImage';
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
