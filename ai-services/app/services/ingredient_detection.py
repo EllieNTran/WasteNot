@@ -11,20 +11,21 @@ client = InferenceHTTPClient(
 )
 
 
-def run_ingredient_detection(image_path: str):
+def run_ingredient_detection(image_path: str, auth_token: str = None):
     """
     Detect ingredients in the given image using Roboflow Inference API.
 
     Args:
-        image_path (str): Path to the image file in the GCS bucket.
+        image_path (str): Path to the image file in the Supabase bucket.
+        auth_token (str): Optional auth token for accessing the file.
     """
     # Create a temporary file to store the downloaded image
     with tempfile.NamedTemporaryFile(suffix=os.path.splitext(image_path)[-1], delete=False) as temp_file:
         temp_local_path = temp_file.name
 
     try:
-        # Download the image from GCS to the temporary file
-        retrieve_object_from_bucket(image_path, temp_local_path)
+        # Download the image from Supabase to the temporary file
+        retrieve_object_from_bucket(image_path, temp_local_path, auth_token)
 
         # Run the Roboflow workflow using the local file path
         result = client.run_workflow(

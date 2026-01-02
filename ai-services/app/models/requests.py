@@ -22,3 +22,4 @@ class IngredientDetectionRequest(BaseModel):  # pylint:disable=too-few-public-me
         BaseModel: A base class for creating Pydantic models
     """
     image: str = Field(..., example="path/to/image.jpg")
+    authToken: str | None = None
