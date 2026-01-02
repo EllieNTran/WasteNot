@@ -61,7 +61,7 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
   const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
   
   try {
-    const response = await apiFetch('/api/storage/upload-image', {
+    const response = await apiFetch('/api/ai/detect-ingredients', {
       method: 'POST',
       headers: session?.access_token ? {
         'Authorization': `Bearer ${session.access_token}`,
