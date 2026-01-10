@@ -3,7 +3,8 @@ import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '../constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
-import { BlackClock, GreenCalendar, Edit, Bin, Ingredients, Vegetable, Fruit, Dairy, Meat } from '@/src/assets/icons';
+import { BlackClock, GreenCalendar, Edit, Bin, Ingredients } from '@/src/assets/icons';
+import { calculateDaysLeft, getIconForIngredientType } from '../utils/ingredients';
 
 interface IngredientCardProps {
   ingredient: string;
@@ -15,12 +16,6 @@ interface IngredientCardProps {
 export default function IngredientCard({ ingredient, quantity, expirationDate, type }: IngredientCardProps) {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [iconSource, setIconSource] = useState<ImageSourcePropType>(Ingredients);
-  
-  const calculateDaysLeft = (expiration: string) => {
-    const diffTime = new Date(expiration).getTime() - new Date().getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  }
 
   useEffect(() => {
     const days = calculateDaysLeft(expirationDate);
@@ -28,22 +23,7 @@ export default function IngredientCard({ ingredient, quantity, expirationDate, t
   }, [expirationDate]);
 
   useEffect(() => {
-    switch (type.toLowerCase()) {
-      case 'vegetables':
-        setIconSource(Vegetable);
-        break;
-      case 'fruits':
-        setIconSource(Fruit);
-        break;
-      case 'dairy':
-        setIconSource(Dairy);
-        break;
-      case 'meat':
-        setIconSource(Meat);
-        break;
-      default:
-        setIconSource(Ingredients);
-    }
+    setIconSource(getIconForIngredientType(type));
   }, [type]);
 
   return (

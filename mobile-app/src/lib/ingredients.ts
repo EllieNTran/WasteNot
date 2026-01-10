@@ -62,7 +62,8 @@ export const getExpiringSoon = async (userId: string) => {
     .eq('status', 'available')
     .is('deleted_at', null)
     .lte('expiry_date', threeDaysFromNow.toISOString().split('T')[0])
-    .order('expiry_date', { ascending: true });
+    .order('expiry_date', { ascending: true })
+    .limit(3);
   
   return { data: data as Ingredient[] | null, error };
 };
