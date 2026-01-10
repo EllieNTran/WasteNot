@@ -3,7 +3,6 @@ from app.settings import settings
 
 client: Client = create_client(settings.supabase_url, settings.supabase_anon_key)
 
-
 def upload_object_to_bucket(source_file, destination_blob_name):
     """
     source_file (str): Path to the local file to be uploaded.
@@ -14,7 +13,7 @@ def upload_object_to_bucket(source_file, destination_blob_name):
         with open(source_file, 'rb') as f:
             file_data = f.read()
         
-        response = client.storage.from_(settings.bucket_name).upload(
+        client.storage.from_(settings.bucket_name).upload(
             path=destination_blob_name,
             file=file_data,
             file_options={"content-type": "image/jpeg"}

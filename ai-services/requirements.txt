@@ -1,6 +1,8 @@
 fastapi[standard]==0.118.0
-inference-sdk==0.58.2
+google-genai==1.57.0
+inference-sdk==0.63.5
 langgraph==0.6.8
+langchain==1.2.3
 langchain-google-genai==2.1.12
 pydantic==2.11.9
 pydantic_settings==2.11.0
