@@ -13,15 +13,16 @@ source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-Authenticate Google Cloud account
+Create a `.env` file with your API keys:
 ```bash
-gcloud auth application-default login
+GOOGLE_API_KEY=your_google_api_key
+ROBOFLOW_API_KEY=your_roboflow_api_key
+BUCKET_NAME=user-images
+SUPABASE_URL=https://nhotuxtrsnxuxwlalept.supabase.co
+SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-Set environment variables (insert your API keys) and run FastAPI app
+Run FastAPI app (environment variables are auto-loaded from .env):
 ```bash
-export GOOGLE_API_KEY=""
-export ROBOFLOW_API_KEY=""
-export BUCKET_NAME="waste-not-bucket"
 fastapi dev app/main.py
 ```
