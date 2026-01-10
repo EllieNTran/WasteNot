@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.models.requests import RecipeGenerationRequest, IngredientDetectionRequest
-from app.services.recipe_generation import run_recipe_generation
+from app.services.recipe_generation import run_recipe_generation_agent
 from app.services.ingredient_detection import run_ingredient_detection
 
 app = FastAPI()
@@ -13,7 +13,7 @@ app = FastAPI()
 )
 async def generate_recipe(request: RecipeGenerationRequest):
     """API endpoint to generate a recipe
-    
+
     Args:
         request: json body containing the ingredients and dietary preferences
 
@@ -21,8 +21,14 @@ async def generate_recipe(request: RecipeGenerationRequest):
         The generated recipe as a string
     """
     try:
-        response = run_recipe_generation(request.ingredients, request.dietary_preferences)
-        return {"message": response}
+        response = run_recipe_generation_agent(
+            request.ingredients,
+            request.dietary_preferences,
+            request.allergies,
+            request.meal_type,
+            request.cooking_time,
+        )
+        return {"recipe": response}
     except Exception as e:
         return {"error": str(e)}
 
@@ -43,6 +49,6 @@ async def detect_ingredients(request: IngredientDetectionRequest):
     try:
         print("Received request for ingredient detection: ", request)
         response = run_ingredient_detection(request.image, request.authToken)
-        return {"message": response}
+        return {"ingredients": response}
     except Exception as e:
         return {"error": str(e)}
