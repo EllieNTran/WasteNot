@@ -11,47 +11,55 @@ def upload_object_to_bucket(source_file, destination_blob_name):
     """
 
     try:
-        with open(source_file, 'rb') as f:
+        with open(source_file, "rb") as f:
             file_data = f.read()
-        
-        response = client.storage.from_(settings.bucket_name).upload(
+
+        client.storage.from_(settings.bucket_name).upload(
             path=destination_blob_name,
             file=file_data,
-            file_options={"content-type": "image/jpeg"}
+            file_options={"content-type": "image/jpeg"},
         )
 
-        print(f'File {source_file} uploaded to {settings.bucket_name}/{destination_blob_name}')
-    
+        print(
+            f"File {source_file} uploaded to {settings.bucket_name}/{destination_blob_name}"
+        )
+
     except Exception as e:
-        print(f'Error uploading file: {str(e)}')
+        print(f"Error uploading file: {str(e)}")
 
 
 def retrieve_object_from_bucket(object_name, destination_file_path, auth_token=None):
     """
-        object_name (str): The name of the object you want to retrieve.
-        destination_file_path (str): The path to save the retrieved object locally.
-        auth_token (str): Optional auth token for accessing protected files.
+    object_name (str): The name of the object you want to retrieve.
+    destination_file_path (str): The path to save the retrieved object locally.
+    auth_token (str): Optional auth token for accessing protected files.
     """
-    
+
     try:
-        print(f"Attempting to download: {object_name} from bucket: {settings.bucket_name}")
-        
+        print(
+            f"Attempting to download: {object_name} from bucket: {settings.bucket_name}"
+        )
+
         # Use auth token if provided, otherwise use anon key
         if auth_token:
             print(f"Using auth token for download")
             # Create client with user's JWT token
             auth_client = create_client(settings.supabase_url, auth_token)
-            response = auth_client.storage.from_(settings.bucket_name).download(object_name)
+            response = auth_client.storage.from_(settings.bucket_name).download(
+                object_name
+            )
         else:
             print(f"Using anon key for download")
             response = client.storage.from_(settings.bucket_name).download(object_name)
-        
+
         print(f"Downloaded {len(response)} bytes")
-        
-        with open(destination_file_path, 'wb') as f:
+
+        with open(destination_file_path, "wb") as f:
             f.write(response)
 
-        print(f"Object '{object_name}' retrieved and saved to '{destination_file_path}'.")
+        print(
+            f"Object '{object_name}' retrieved and saved to '{destination_file_path}'."
+        )
 
     except Exception as e:
         print(f"Error downloading from storage: {e}")

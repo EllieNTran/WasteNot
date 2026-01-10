@@ -2,7 +2,7 @@ import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
-import { BackArrow, RightArrow } from '@/src/assets/icons';
+import { RightArrow } from '@/src/assets/icons';
 
 interface CardProps {
   iconSource: ImageSourcePropType;
