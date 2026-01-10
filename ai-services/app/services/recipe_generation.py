@@ -15,5 +15,7 @@ def run_recipe_generation(ingredients: list, dietary_preferences: list):
     Returns:
         The generated recipe
     """
-    result = model_with_structure.invoke(f"Generate a recipe with the following ingredients: {', '.join(ingredients)} and dietary preferences: {', '.join(dietary_preferences)}.")
+    result = model_with_structure.invoke(
+        f"Generate a recipe with the following ingredients: {', '.join(ingredients)} and dietary preferences: {', '.join(dietary_preferences)}."
+    )
     return result

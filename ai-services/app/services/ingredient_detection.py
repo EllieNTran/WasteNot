@@ -9,6 +9,7 @@ client = InferenceHTTPClient(
     api_url="https://serverless.roboflow.com", api_key=settings.roboflow_api_key
 )
 
+
 def run_ingredient_detection(image_path: str, auth_token: str = None):
     """
     Detect ingredients in the given image using Roboflow Inference API.
