@@ -13,7 +13,7 @@ app = FastAPI()
 )
 async def generate_recipe(request: RecipeGenerationRequest):
     """API endpoint to generate a recipe
-    
+
     Args:
         request: json body containing the ingredients and dietary preferences
 
@@ -26,7 +26,7 @@ async def generate_recipe(request: RecipeGenerationRequest):
             request.dietary_preferences,
             request.allergies,
             request.meal_type,
-            request.cooking_time
+            request.cooking_time,
         )
         return {"recipe": response}
     except Exception as e:

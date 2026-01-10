@@ -20,20 +20,25 @@ def search_recipes_by_ingredients(ingredients: list[str], top_k: int = 5) -> lis
         embedding = generate_embedding(ingredients_text)
 
         response = client.rpc(
-            "search_recipes",
-            {"user_embedding": embedding, "top_k": top_k}
+            "search_recipes", {"user_embedding": embedding, "top_k": top_k}
         ).execute()
-        
+
         return response.data
-    
+
     except Exception as e:
         print(f"Error searching recipes: {e}")
         return []
 
 
-def run_recipe_generation_agent(ingredients: list, dietary_preferences: list, allergies: list, meal_type: str, cooking_time: str):
+def run_recipe_generation_agent(
+    ingredients: list,
+    dietary_preferences: list,
+    allergies: list,
+    meal_type: str,
+    cooking_time: str,
+):
     """Runs an agent to generate a recipe based on user inputs and example recipes from the database.
-    
+
     Args:
         ingredients (list): List of ingredients available to the user.
         dietary_preferences (list): List of dietary preferences.
@@ -57,7 +62,7 @@ def run_recipe_generation_agent(ingredients: list, dietary_preferences: list, al
         model,
         tools=[],
         system_prompt="You are an expert at creating custom recipes based on user preferences.",
-        response_format=ToolStrategy(RecipeGenerationOutput)
+        response_format=ToolStrategy(RecipeGenerationOutput),
     )
     result = agent.invoke({"messages": [{"role": "user", "content": message}]})
 

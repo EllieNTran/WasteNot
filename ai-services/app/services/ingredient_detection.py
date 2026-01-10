@@ -6,9 +6,9 @@ from app.settings import settings
 from app.connectors.storage import retrieve_object_from_bucket
 
 client = InferenceHTTPClient(
-    api_url="https://serverless.roboflow.com",
-    api_key=settings.roboflow_api_key
+    api_url="https://serverless.roboflow.com", api_key=settings.roboflow_api_key
 )
+
 
 def run_ingredient_detection(image_path: str, auth_token: str = None):
     """
@@ -18,7 +18,9 @@ def run_ingredient_detection(image_path: str, auth_token: str = None):
         image_path (str): Path to the image file in the Supabase bucket.
         auth_token (str): Optional auth token for accessing the file.
     """
-    with tempfile.NamedTemporaryFile(suffix=os.path.splitext(image_path)[-1], delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        suffix=os.path.splitext(image_path)[-1], delete=False
+    ) as temp_file:
         temp_local_path = temp_file.name
 
     try:
@@ -27,10 +29,8 @@ def run_ingredient_detection(image_path: str, auth_token: str = None):
         result = client.run_workflow(
             workspace_name="sdl-wastenot",
             workflow_id="detect-count-and-visualize",
-            images={
-                "image": temp_local_path
-            },
-            use_cache=True
+            images={"image": temp_local_path},
+            use_cache=True,
         )
 
         ingredients_list = extract_ingredients(result[0])
@@ -51,13 +51,13 @@ def extract_ingredients(result):
     Returns:
         List of dicts: [{'ingredient': ...}, ...]
     """
-    predictions = result.get('predictions', {}).get('predictions', [])
+    predictions = result.get("predictions", {}).get("predictions", [])
     seen = set()
     ingredients = []
     for pred in predictions:
-        name = pred.get('class')
-        confidence = pred.get('confidence', 0)
+        name = pred.get("class")
+        confidence = pred.get("confidence", 0)
         if confidence >= 0.7 and name not in seen:
-            ingredients.append({'ingredient': name})
+            ingredients.append({"ingredient": name})
             seen.add(name)
     return ingredients
