@@ -7,29 +7,26 @@ import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRouter, useSegments } from 'expo-router';
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '@/src/lib/supabase';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/src/components/toast';
+import { AuthProvider, useAuth } from '@/src/contexts/authContext';
 
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayoutNav() {
   const pathname = usePathname();
   const colorScheme = useColorScheme();
   const [theme, setTheme] = useState(DefaultTheme);
+  const segments = useSegments();
+  const router = useRouter();
+  const { session, loading } = useAuth();
 
   const [fontsLoaded, fontError] = useFonts({
     Nunito: require('@/src/assets/fonts/Nunito-VariableFont_wght.ttf'),
     DMSerifDisplay: require('@/src/assets/fonts/DMSerifDisplay-Regular.ttf'),
   });
-
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const segments = useSegments();
-  const router = useRouter();
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -41,19 +38,6 @@ export default function RootLayout() {
     const isAuthFlow = ['/launch', '/login', '/signup'].includes(pathname);
     setTheme(isAuthFlow ? DarkTheme : colorScheme === 'dark' ? DarkTheme : DefaultTheme);
   }, [pathname, colorScheme]);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -71,25 +55,33 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
+    <ThemeProvider value={theme}>
+      <View style={{ flex: 1, overflow: 'hidden' }}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="launch" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="signup" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style="auto" />
+        <Toast
+          config={toastConfig}
+          position="bottom"
+          bottomOffset={24}
+        />
+      </View>
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={theme}>
-        <View style={{ flex: 1, overflow: 'hidden' }}>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="launch" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="signup" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </Stack>
-          <StatusBar style="auto" />
-          <Toast
-            config={toastConfig}
-            position="bottom"
-            bottomOffset={24}
-          />
-        </View>
-      </ThemeProvider>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

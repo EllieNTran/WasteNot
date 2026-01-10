@@ -20,8 +20,6 @@ const multipartParser = multer({
     fileSize: 10 * 1024 * 1024, // 10MB
   },
   fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    console.log('request', req)
-    console.log('file', file)
     let approve = false
     if (allowedMimeTypes.includes(file.mimetype)) {
       approve = true

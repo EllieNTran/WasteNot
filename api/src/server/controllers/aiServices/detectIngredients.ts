@@ -10,7 +10,6 @@ declare module 'express' {
 }
 
 const controller = async (req: Request): Promise<ControllerResult> => {
-  console.log('Received detect ingredients request', req);
   if (!req.file) {
     return {
       status: 400,
@@ -29,7 +28,7 @@ const controller = async (req: Request): Promise<ControllerResult> => {
       const payload = JSON.parse(Buffer.from(authToken.split('.')[1], 'base64').toString());
       userId = payload.sub;
     } catch (error) {
-      console.error('Failed to decode JWT:', error);
+      logger.error('Failed to decode JWT:', error);
     }
   }
 

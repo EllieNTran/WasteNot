@@ -6,7 +6,7 @@ export interface Ingredient {
   user_id: string;
   name: string;
   amount: string | null;
-  type: IngredientType | null;
+  type: IngredientType;
   status: IngredientStatus;
   expiry_date: string | null;
   image_path: string | null;

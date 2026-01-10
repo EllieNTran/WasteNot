@@ -9,7 +9,7 @@ import { Settings, Clock, Ingredients, Recipe, Vegetable } from '@/src/assets/ic
 import { getProfile } from '@/src/lib/profiles';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { supabase } from '@/src/lib/supabase';
+import { useAuth } from '@/src/contexts/authContext';
 
 const Statistic = ({
   value,
@@ -49,14 +49,15 @@ export default function HomeScreen() {
   const [fullName, setFullName] = useState<string>('User');
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      if (!user) return;
+
       if (user) {
         const { data: profile, error } = await getProfile(user.id);
-        
+
         if (profile && !error) {
           setFullName(profile.full_name || 'User');
         }

@@ -1,22 +1,23 @@
-import { StyleSheet, View, Pressable, Text, Alert, Modal, Image } from 'react-native';
+import { StyleSheet, View, Pressable, Alert, Modal, Image } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title, Subtitle } from '@/src/components/typography';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { BackArrow, Camera, GreenCamera, Gallery, Keyboard } from '@/src/assets/icons';
 import { Icon } from '@/src/components/icon';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
 import Card from '@/src/components/card';
 import * as ImagePicker from 'expo-image-picker';
-import { useUploadImage } from '../../../services/ingredientsConnectors';
+import { useDetectIngredients } from '../../../services/ingredientsConnectors';
 
 export default function ScanIngredientsScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const uploadImageMutation = useUploadImage();
+  const detectIngredientsMutation = useDetectIngredients();
   const cameraRef = useRef<CameraView>(null);
+  const router = useRouter();
 
   const pickImage = async () => {
     try {
@@ -67,19 +68,32 @@ export default function ScanIngredientsScreen() {
       type: fileType,
     };
 
+    setShowPreview(false);
+    setPhoto(null);
+    router.push({
+      pathname: '/ingredients/recognisedIngredients',
+      params: { 
+        isLoading: 'true'
+      }
+    });
+
     console.log('Uploading file:', file);
-    uploadImageMutation.mutate(file, {
+    detectIngredientsMutation.mutate(file, {
       onSuccess: (data) => {
         console.log('Upload success:', data);
-        Alert.alert('Success', 'Image uploaded successfully!');
+        router.setParams({
+          uploadData: JSON.stringify(data),
+          isLoading: 'false'
+        });
       },
       onError: (error) => {
         console.error('Upload error:', error);
-        Alert.alert('Error', error.message);
+        router.setParams({
+          error: error.message,
+          isLoading: 'false'
+        });
       },
     });
-    setShowPreview(false);
-    setPhoto(null);
   };
 
   const handleCancelPhoto = () => {

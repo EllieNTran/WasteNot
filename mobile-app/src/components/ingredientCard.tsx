@@ -1,17 +1,51 @@
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '../constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
-import { BlackClock, GreenCalendar, Edit, Bin } from '@/src/assets/icons';
+import { BlackClock, GreenCalendar, Edit, Bin, Ingredients, Vegetable, Fruit, Dairy, Meat } from '@/src/assets/icons';
 
 interface IngredientCardProps {
   ingredient: string;
-  iconSource: ImageSourcePropType;
   quantity: string;
   expirationDate: string;
+  type: string;
 }
 
-export default function IngredientCard({ ingredient, iconSource, quantity, expirationDate }: IngredientCardProps) {
+export default function IngredientCard({ ingredient, quantity, expirationDate, type }: IngredientCardProps) {
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
+  const [iconSource, setIconSource] = useState<ImageSourcePropType>(Ingredients);
+  
+  const calculateDaysLeft = (expiration: string) => {
+    const diffTime = new Date(expiration).getTime() - new Date().getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+
+  useEffect(() => {
+    const days = calculateDaysLeft(expirationDate);
+    setDaysLeft(days);
+  }, [expirationDate]);
+
+  useEffect(() => {
+    switch (type.toLowerCase()) {
+      case 'vegetables':
+        setIconSource(Vegetable);
+        break;
+      case 'fruits':
+        setIconSource(Fruit);
+        break;
+      case 'dairy':
+        setIconSource(Dairy);
+        break;
+      case 'meat':
+        setIconSource(Meat);
+        break;
+      default:
+        setIconSource(Ingredients);
+    }
+  }, [type]);
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -34,7 +68,9 @@ export default function IngredientCard({ ingredient, iconSource, quantity, expir
         </View>
         <View style={styles.remainingDaysContainer}>
           <Icon source={BlackClock} size={13} />
-          <BodyText style={styles.remainingDaysText}>4 days left</BodyText>
+          <BodyText style={styles.remainingDaysText}>
+            {daysLeft !== null ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left` : ''}
+          </BodyText>
         </View>
       </View>
       <Pressable style={styles.markAsUsedButton}>

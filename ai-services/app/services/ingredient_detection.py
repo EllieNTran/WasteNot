@@ -10,7 +10,6 @@ client = InferenceHTTPClient(
     api_key=settings.roboflow_api_key
 )
 
-
 def run_ingredient_detection(image_path: str, auth_token: str = None):
     """
     Detect ingredients in the given image using Roboflow Inference API.
@@ -19,22 +18,19 @@ def run_ingredient_detection(image_path: str, auth_token: str = None):
         image_path (str): Path to the image file in the Supabase bucket.
         auth_token (str): Optional auth token for accessing the file.
     """
-    # Create a temporary file to store the downloaded image
     with tempfile.NamedTemporaryFile(suffix=os.path.splitext(image_path)[-1], delete=False) as temp_file:
         temp_local_path = temp_file.name
 
     try:
-        # Download the image from Supabase to the temporary file
         retrieve_object_from_bucket(image_path, temp_local_path, auth_token)
 
-        # Run the Roboflow workflow using the local file path
         result = client.run_workflow(
             workspace_name="sdl-wastenot",
             workflow_id="detect-count-and-visualize",
             images={
                 "image": temp_local_path
             },
-            use_cache=True # Speeds up repeated requests
+            use_cache=True
         )
 
         ingredients_list = extract_ingredients(result[0])

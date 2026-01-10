@@ -26,3 +26,6 @@ export const Settings = require('./settings.png');
 export const Vegetable = require('./vegetable.png');
 export const Wand = require('./wand.png');
 export const WhiteWand = require('./whiteWand.png');
+export const Dairy = require('./dairy.png');
+export const Meat = require('./meat.png');
+export const Fruit = require('./fruit.png');

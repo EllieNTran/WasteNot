@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/src/utils/fetch';
 import { supabase } from '@/src/lib/supabase';
 
-interface UploadImageResponse {
+interface DetectIngredientsResponse {
   fileId: string;
 }
 
@@ -26,10 +26,9 @@ const convertBase64ToBlob = (base64Data: string): Blob => {
   return new Blob([array], { type: contentType });
 };
 
-const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
+const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsResponse> => {
   console.log('Starting upload process...');
   
-  // Get current user's session token
   console.log('Getting user session...');
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   
@@ -47,7 +46,6 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
     const blob = convertBase64ToBlob(file.uri);
     formData.append('file', blob, file.name);
   } else {
-    // Native file upload
     formData.append('file', {
       uri: file.uri,
       name: file.name,
@@ -95,8 +93,8 @@ const uploadImage = async (file: UploadFile): Promise<UploadImageResponse> => {
   }
 };
 
-export const useUploadImage = (options?: any) =>
-  useMutation<UploadImageResponse, Error, UploadFile>({
-    mutationFn: uploadImage,
+export const useDetectIngredients = (options?: any) =>
+  useMutation<DetectIngredientsResponse, Error, UploadFile>({
+    mutationFn: detectIngredients,
     ...options,
   });
