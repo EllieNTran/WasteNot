@@ -10,6 +10,8 @@ import { getProfile } from '@/src/lib/profiles';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/contexts/authContext';
+import { getExpiringSoon } from '@/src/lib/ingredients';
+import { calculateDaysLeft } from '@/src/utils/ingredients';
 
 const Statistic = ({
   value,
@@ -48,13 +50,30 @@ const ShortcutButton = ({
 export default function HomeScreen() {
   const [fullName, setFullName] = useState<string>('User');
   const [loading, setLoading] = useState(true);
+  const [expiringSoonIngredients, setExpiringSoonIngredients] = useState<any[]>([]);
   const router = useRouter();
   const { user } = useAuth();
 
   useEffect(() => {
+    async function loadExpiringSoonIngredients() {
+      if (!user) return;
+      const { data, error } = await getExpiringSoon(user.id);
+
+      if (error) {
+        console.error('Error fetching expiring soon ingredients:', error);
+      } else {
+        setExpiringSoonIngredients(data || []);
+      }
+    }
+
+    loadExpiringSoonIngredients();
+  }, [user]);
+
+  console.log('Expiring Soon Ingredients:', expiringSoonIngredients);
+
+  useEffect(() => {
     async function loadProfile() {
       if (!user) return;
-
       if (user) {
         const { data: profile, error } = await getProfile(user.id);
 
@@ -62,7 +81,6 @@ export default function HomeScreen() {
           setFullName(profile.full_name || 'User');
         }
       }
-      
       setLoading(false);
     }
 
@@ -109,15 +127,23 @@ export default function HomeScreen() {
         />
       </View>
 
-      <View>
+      <View style={styles.expiringSoonContainer}>
         <Subtitle color={Colors.light.text} style={styles.sectionTitle}>Expiring Soon</Subtitle>
         <View>
-          <Card 
-            iconSource={Vegetable} 
-            text="Upload From Gallery" 
-            caption="Select existing photos" 
-            onPress={() => {}} 
-          />
+          {expiringSoonIngredients.length !== 0 && (
+            expiringSoonIngredients.map((ingredient) => {
+              const daysLeft = calculateDaysLeft(ingredient.expiry_date);
+              return (
+                <Card 
+                  key={ingredient.id}
+                  iconSource={Vegetable}
+                  text={ingredient.name}
+                  caption={`Expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}
+                  onNavigatePress={() => router.navigate('/(tabs)/ingredients')}
+                />
+              );
+            })
+          )}
         </View>
       </View>
     </MainView>
@@ -200,4 +226,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginBottom: 12,
   },
+  expiringSoonContainer: {
+    width: '100%',
+  }
 });

@@ -2,15 +2,17 @@ import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { Icon } from './icon';
 import { BodyText } from './typography';
+import { RightArrow } from '@/src/assets/icons';
 
 interface CardProps {
   iconSource: ImageSourcePropType;
   text: string;
   caption?: string;
   onPress?: () => void;
+  onNavigatePress?: () => void;
 }
 
-export default function Card({ iconSource, text, caption, onPress }: CardProps) {
+export default function Card({ iconSource, text, caption, onPress, onNavigatePress }: CardProps) {
   const content = (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
@@ -20,6 +22,11 @@ export default function Card({ iconSource, text, caption, onPress }: CardProps) 
         <BodyText style={styles.text}>{text}</BodyText>
         {caption && <BodyText style={styles.caption}>{caption}</BodyText>}
       </View>
+      {onNavigatePress && (
+        <Pressable onPress={onNavigatePress} style={styles.navigateButton}>
+          <Icon source={RightArrow} size={28} style={styles.navigateIcon} />
+        </Pressable>
+      )}
     </View>
   );
 
@@ -60,4 +67,11 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: Colors.dark.grey,
   },
+  navigateButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  navigateIcon: {
+    marginRight: -12,
+  }
 });
