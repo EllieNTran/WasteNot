@@ -15,7 +15,10 @@ class RecipeGenerationRequest(BaseModel):  # pylint:disable=too-few-public-metho
     ingredients: List[str] = Field(
         ..., example=["chicken", "cauliflower", "broccoli", "onion"]
     )
-    dietary_preferences: List[str] = Field(..., example=["gluten-free", "low-carb"])
+    dietary_preferences: List[str] = Field(..., example=["gluten-free", "vegetarian"])
+    allergies: List[str] = Field(..., example=["peanuts", "shellfish"])
+    meal_type: str = Field(..., example="dinner")
+    cooking_time: str = Field(..., example="30 minutes")
 
 
 class IngredientDetectionRequest(BaseModel):  # pylint:disable=too-few-public-methods
