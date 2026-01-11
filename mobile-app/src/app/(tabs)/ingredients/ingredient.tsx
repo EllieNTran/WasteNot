@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Platform, Modal } from 'react-native';
+import { StyleSheet, View, Pressable, Platform, Modal, ScrollView } from 'react-native';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { Colors } from '@/src/constants/theme';
@@ -168,7 +168,12 @@ export default function AddIngredientScreen() {
 
       <View style={styles.typeContainer}>
         <BodyText style={styles.inputLabel}>Type</BodyText>
-        <View style={styles.row}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.typeScroll}
+          contentContainerStyle={styles.row}
+        >
           {(['Vegetables', 'Meat', 'Dairy', 'Fruits', 'Other'] as const).map(type => (
             <OptionButton
               key={type}
@@ -177,7 +182,7 @@ export default function AddIngredientScreen() {
               onPress={() => setSelectedType(type)}
             />
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       <View style={styles.inputContainer}>
@@ -302,11 +307,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
+  typeScroll: {
     marginTop: 5,
+  },
+  row: {
+    gap: 8,
+    paddingHorizontal: 2,
   },
   inputContainer: {
     width: '100%',

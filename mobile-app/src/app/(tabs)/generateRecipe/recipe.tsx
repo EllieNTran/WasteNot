@@ -4,12 +4,30 @@ import { MainView } from '@/src/components/mainView';
 import { BodyText, Subtitle } from '@/src/components/typography';
 import { AddMissing, BackArrow, Checked, GreyClock, Save } from '@/src/assets/icons';
 import { Icon } from '@/src/components/icon';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { StyledButton } from '@/src/components/styledButton';
+import { useMemo, useState } from 'react';
 
-export default function PastRecipesScreen() {
-  const createdDate = new Date('2024-06-15T10:30:00Z');
-  const ingredients = [
+export default function RecipeScreen() {
+  const params = useLocalSearchParams();
+  const [instructionsIndex, setInstructionsIndex] = useState(0);
+  
+  const recipe = useMemo(() => {
+    if (params.recipeData && typeof params.recipeData === 'string') {
+      try {
+        return JSON.parse(params.recipeData);
+      } catch (e) {
+        console.error('Failed to parse recipe data:', e);
+        return null;
+      }
+    }
+    return null;
+  }, [params.recipeData]);
+
+  const recipeName = recipe?.name || 'Chicken Fried Rice';
+  const recipeDescription = recipe?.description || 'A flavorful and easy-to-make meal with crispy air-fried (or skillet-fried) chicken tossed in spicy-sweet homemade bang bang sauce.';
+  const cookingTime = recipe?.total_time || recipe?.cook_time || '20 mins';
+  const ingredients = recipe?.ingredients || [
     '2 cups cooked rice',
     '1 cup cooked chicken, diced',
     '1/2 cup frozen peas and carrots',
@@ -19,7 +37,7 @@ export default function PastRecipesScreen() {
     '2 cloves garlic, minced',
     '1/2 teaspoon ground ginger',
   ];
-  const instructions = [
+  const instructions = recipe?.instructions || [
     'Heat 1 tablespoon of vegetable oil in a large skillet or wok over medium-high heat.',
     'Add the minced garlic and ground ginger, sauté for about 30 seconds until fragrant.',
     'Push the garlic and ginger to one side of the skillet. Pour the beaten eggs into the other side and scramble until fully cooked.',
@@ -28,6 +46,8 @@ export default function PastRecipesScreen() {
     'Cook for an additional 5-7 minutes, stirring occasionally, until everything is heated through and slightly crispy on the bottom.',
     'Season with salt and pepper to taste. Serve hot and enjoy your chicken fried rice!',
   ];
+  
+  const createdDate = new Date();
 
   return (
     <MainView>
@@ -48,10 +68,10 @@ export default function PastRecipesScreen() {
       />
 
       <View style={styles.header}>
-        <Subtitle color={Colors.light.text} style={styles.title}>Chicken Fried Rice</Subtitle>
+        <Subtitle color={Colors.light.text} style={styles.title}>{recipeName}</Subtitle>
         <View style={styles.cookingTimeContainer}>
           <Icon source={GreyClock} size={16} />
-          <BodyText color={Colors.light.grey} style={styles.cookingTimeText}>20 mins</BodyText>
+          <BodyText color={Colors.light.grey} style={styles.cookingTimeText}>{cookingTime}</BodyText>
         </View>
       </View>
 
@@ -59,7 +79,7 @@ export default function PastRecipesScreen() {
         Created: {createdDate.toLocaleDateString()}
       </BodyText>
       <BodyText color={Colors.light.icon} style={styles.description}>
-        A flavorful and easy-to-make meal with crispy air-fried (or skillet-fried) chicken tossed in spicy-sweet homemade bang bang sauce.
+        {recipeDescription}
       </BodyText>
 
       <View style={styles.sectionHeader}>
@@ -72,22 +92,28 @@ export default function PastRecipesScreen() {
           textStyle={styles.markAllText}
         />
       </View>
-      {ingredients.map((item, index) => (
-        <View style={styles.ingredientRow} key={index}>
-          <BodyText color={Colors.light.icon} style={styles.item}>
-            {item}
-          </BodyText>
-          <Icon source={Checked} size={22} />
-        </View>
-      ))}
+      {ingredients.map((item: any, index: number) => {
+        const ingredientText = typeof item === 'string' ? item : `${item.amount} ${item.name}`;
+        return (
+          <View style={styles.ingredientRow} key={index}>
+            <BodyText color={Colors.light.icon} style={styles.item}>
+              {ingredientText}
+            </BodyText>
+            <Icon source={Checked} size={22} />
+          </View>
+        );
+      })}
 
       <View style={styles.instructionsContainer}>
         <Subtitle color={Colors.light.text} style={styles.subtitle}>Instructions</Subtitle>
-        {instructions.map((step, index) => (
-          <BodyText color={Colors.light.icon} style={styles.item} key={index}>
-            {index + 1}. {step}
-          </BodyText>
-        ))}
+        {instructions.map((step: string) => {
+          setInstructionsIndex(instructionsIndex + 1); 
+          return (
+            <BodyText color={Colors.light.icon} style={styles.item} key={instructionsIndex}>
+              {instructionsIndex + 1}. {step}
+            </BodyText>
+          )
+        })}
       </View>
 
       </View>
