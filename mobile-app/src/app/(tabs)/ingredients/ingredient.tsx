@@ -228,13 +228,13 @@ export default function AddIngredientScreen() {
             <View style={styles.datePickerModal}>
               <View style={styles.modalHeader}>
                 <Pressable onPress={cancelDateIOS}>
-                  <BodyText color={Colors.dark.background} style={styles.modalButton}>
+                  <BodyText color={Colors.dark.text} style={styles.modalButton}>
                     Cancel
                   </BodyText>
                 </Pressable>
-                <BodyText style={styles.modalTitle}>Select Date</BodyText>
+                <BodyText color={Colors.dark.text} style={styles.modalTitle}>Select Date</BodyText>
                 <Pressable onPress={confirmDateIOS}>
-                  <BodyText color={Colors.dark.background} style={styles.modalButton}>
+                  <BodyText color={Colors.dark.text} style={styles.modalButton}>
                     Done
                   </BodyText>
                 </Pressable>
@@ -242,7 +242,7 @@ export default function AddIngredientScreen() {
               <DateTimePicker
                 value={tempDate}
                 mode="date"
-                display="compact"
+                display="inline"
                 onChange={onDateChange}
                 minimumDate={new Date()}
                 textColor={Colors.light.text}
@@ -343,10 +343,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   datePickerModal: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.dark.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 20,
+    alignItems: 'center',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -356,6 +357,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.grey,
+    width: '100%',
   },
   modalTitle: {
     fontSize: 16,

@@ -1,9 +1,19 @@
 export const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  const day = date.getDate();
+  const month = date.toLocaleDateString('en-US', { month: 'short' });
+  const year = date.getFullYear();
+  
+  const suffix = (day: number) => {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+  
+  return `${month} ${day}${suffix(day)}, ${year}`;
 };
 
 export const formatDateForDB = (date: Date) => {
