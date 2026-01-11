@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Alert, Modal, Image } from 'react-native';
+import { StyleSheet, View, Pressable, Modal, Image } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title, Subtitle } from '@/src/components/typography';
@@ -10,6 +10,7 @@ import { useState, useRef } from 'react';
 import Card from '@/src/components/card';
 import * as ImagePicker from 'expo-image-picker';
 import { useDetectIngredients } from '../../../services/detectIngredients';
+import Toast from 'react-native-toast-message';
 
 export default function ScanIngredientsScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -23,7 +24,11 @@ export default function ScanIngredientsScreen() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please grant permission to access your photo library');
+        Toast.show({
+          type: 'error',
+          text1: 'Permission needed',
+          text2: 'Please grant permission to access your photo library',
+        });
         return;
       }
 
@@ -41,7 +46,11 @@ export default function ScanIngredientsScreen() {
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to pick image',
+      });
     }
   };
 
