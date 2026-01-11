@@ -1,5 +1,6 @@
-import { StyleSheet, View, Pressable, Platform, Modal, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Platform, Modal } from 'react-native';
 import { useState } from 'react';
+import Toast from 'react-native-toast-message';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title } from '@/src/components/typography';
@@ -73,32 +74,48 @@ export default function AddIngredientScreen() {
 
   const getMutationOptions = (action: 'added' | 'updated') => ({
     onSuccess: () => {
-      Alert.alert('Success', `Ingredient ${action} successfully!`, [
-        {
-          text: 'OK',
-          onPress: () => router.back(),
-        },
-      ]);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: `Ingredient ${action} successfully!`,
+      });
+      router.back();
     },
     onError: (error: any) => {
       console.error(`Error ${action.replace('ed', 'ing')} ingredient:`, error);
-      Alert.alert('Error', error.message || `Failed to ${action.replace('ed', '')} ingredient.`);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message || `Failed to ${action.replace('ed', '')} ingredient.`,
+      });
     },
   });
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter ingredient name');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter ingredient name',
+      });
       return;
     }
 
     if (!selectedType) {
-      Alert.alert('Error', 'Please select ingredient type');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please select ingredient type',
+      });
       return;
     }
 
     if (!userId) {
-      Alert.alert('Error', 'You must be logged in');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'You must be logged in',
+      });
       return;
     }
 
