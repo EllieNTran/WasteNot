@@ -107,7 +107,7 @@ export default function GenerateRecipeScreen() {
 
       {generateRecipeMutation.isPending ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.light.icon} />
+          <ActivityIndicator size="large" color={Colors.light.icon} style={styles.loadingIndicator} />
           <BodyText color={Colors.light.text} style={styles.loadingText}>
             Generating your recipe...
           </BodyText>
@@ -439,13 +439,17 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    marginTop: 100,
+    marginTop: 220,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: '500',
+    marginTop: 30,
   },
+  loadingIndicator: {
+    transform: [{ scale: 3 }],
+  }
 });

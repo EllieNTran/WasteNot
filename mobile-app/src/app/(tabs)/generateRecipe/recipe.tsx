@@ -6,11 +6,12 @@ import { AddMissing, BackArrow, Checked, GreyClock, Save } from '@/src/assets/ic
 import { Icon } from '@/src/components/icon';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { StyledButton } from '@/src/components/styledButton';
-import { useMemo, useState } from 'react';
+import { useIngredients } from '@/src/hooks/useIngredients';
+import { useMemo } from 'react';
 
 export default function RecipeScreen() {
   const params = useLocalSearchParams();
-  const [instructionsIndex, setInstructionsIndex] = useState(0);
+  const { data: userIngredients = [] } = useIngredients();
   
   const recipe = useMemo(() => {
     if (params.recipeData && typeof params.recipeData === 'string') {
@@ -24,36 +25,37 @@ export default function RecipeScreen() {
     return null;
   }, [params.recipeData]);
 
-  const recipeName = recipe?.name || 'Chicken Fried Rice';
-  const recipeDescription = recipe?.description || 'A flavorful and easy-to-make meal with crispy air-fried (or skillet-fried) chicken tossed in spicy-sweet homemade bang bang sauce.';
-  const cookingTime = recipe?.total_time || recipe?.cook_time || '20 mins';
-  const ingredients = recipe?.ingredients || [
-    '2 cups cooked rice',
-    '1 cup cooked chicken, diced',
-    '1/2 cup frozen peas and carrots',
-    '2 eggs, beaten',
-    '3 tablespoons soy sauce',
-    '2 tablespoons vegetable oil',
-    '2 cloves garlic, minced',
-    '1/2 teaspoon ground ginger',
-  ];
-  const instructions = recipe?.instructions || [
-    'Heat 1 tablespoon of vegetable oil in a large skillet or wok over medium-high heat.',
-    'Add the minced garlic and ground ginger, sauté for about 30 seconds until fragrant.',
-    'Push the garlic and ginger to one side of the skillet. Pour the beaten eggs into the other side and scramble until fully cooked.',
-    'Add the cooked rice, diced chicken, frozen peas and carrots to the skillet. Stir everything together.',
-    'Pour in the soy sauce and sesame oil. Mix well to ensure all ingredients are evenly coated.',
-    'Cook for an additional 5-7 minutes, stirring occasionally, until everything is heated through and slightly crispy on the bottom.',
-    'Season with salt and pepper to taste. Serve hot and enjoy your chicken fried rice!',
-  ];
-  
+  const recipeName = recipe?.title || 'Recipe';
+  const recipeDescription = recipe?.description || '';
+  const cookingTime = recipe?.cooking_time || 'N/A';
+  const ingredients = recipe?.ingredients || [];
+  const instructions = recipe?.instructions || [];
+
   const createdDate = new Date();
+
+  const userIngredientNames = useMemo(() => {
+    return new Set(
+      userIngredients
+        .filter(ing => ing.status === 'available')
+        .map(ing => ing.name.toLowerCase())
+    );
+  }, [userIngredients]);
+
+  const hasIngredient = (ingredient: any): boolean => {
+    const ingredientName = typeof ingredient === 'string' 
+      ? ingredient.toLowerCase() 
+      : ingredient.name?.toLowerCase() || '';
+    
+    return Array.from(userIngredientNames).some(userIng => 
+      ingredientName.includes(userIng) || userIng.includes(ingredientName)
+    );
+  };
 
   return (
     <MainView>
       <View style={styles.contentWrapper}>
         <View style={styles.buttonsContainer}>
-        <Link href="/ingredients" asChild>
+        <Link href="/generateRecipe" asChild>
           <Pressable>
             <Icon source={BackArrow} size={30} />
           </Pressable>
@@ -78,9 +80,11 @@ export default function RecipeScreen() {
       <BodyText color={Colors.light.darkGrey} style={styles.createdText}>
         Created: {createdDate.toLocaleDateString()}
       </BodyText>
-      <BodyText color={Colors.light.icon} style={styles.description}>
-        {recipeDescription}
-      </BodyText>
+      {recipeDescription ? (
+        <BodyText color={Colors.light.icon} style={styles.description}>
+          {recipeDescription}
+        </BodyText>
+      ) : null}
 
       <View style={styles.sectionHeader}>
         <Subtitle color={Colors.light.text} style={styles.subtitle}>Ingredients</Subtitle>
@@ -94,28 +98,26 @@ export default function RecipeScreen() {
       </View>
       {ingredients.map((item: any, index: number) => {
         const ingredientText = typeof item === 'string' ? item : `${item.amount} ${item.name}`;
+        const hasIt = hasIngredient(item);
         return (
           <View style={styles.ingredientRow} key={index}>
             <BodyText color={Colors.light.icon} style={styles.item}>
               {ingredientText}
             </BodyText>
-            <Icon source={Checked} size={22} />
+            <Icon source={hasIt ? Checked : AddMissing} size={22} />
           </View>
         );
       })}
 
       <View style={styles.instructionsContainer}>
         <Subtitle color={Colors.light.text} style={styles.subtitle}>Instructions</Subtitle>
-        {instructions.map((step: string) => {
-          setInstructionsIndex(instructionsIndex + 1); 
-          return (
-            <BodyText color={Colors.light.icon} style={styles.item} key={instructionsIndex}>
-              {instructionsIndex + 1}. {step}
+        {instructions.map((step: string, index: number) => (
+            <BodyText color={Colors.light.icon} style={styles.item} key={index}>
+              {index + 1}. {step}
             </BodyText>
           )
-        })}
+        )}
       </View>
-
       </View>
     </MainView>
   );
@@ -144,6 +146,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
+    paddingRight: 90,
   },
   createdText: {
     fontSize: 11,
@@ -186,11 +189,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     width: '100%',
     marginTop: 12,
+    position: 'relative',
   },
   cookingTimeContainer: {
     flexDirection: 'row',
@@ -201,6 +202,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 3,
     paddingHorizontal: 6,
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
   cookingTimeText: {
     fontSize: 14,

@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/contexts/authContext';
 import { useExpiringSoon } from '@/src/hooks/useIngredients';
-import { calculateDaysLeft } from '@/src/utils/ingredients';
+import { calculateDaysLeft, getIconForIngredientType } from '@/src/utils/ingredients';
 
 const Statistic = ({
   value,
@@ -119,7 +119,7 @@ export default function HomeScreen() {
               return (
                 <View key={ingredient.id} style={styles.ingredientCard}>
                   <Card
-                    iconSource={Vegetable}
+                    iconSource={getIconForIngredientType(ingredient.type)}
                     text={ingredient.name}
                     caption={`Expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}
                     onNavigatePress={() => router.navigate('/(tabs)/ingredients')}
