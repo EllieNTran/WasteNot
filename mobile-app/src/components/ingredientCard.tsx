@@ -7,6 +7,7 @@ import { BlackClock, GreenCalendar, Edit, Bin, Ingredients } from '@/src/assets/
 import { calculateDaysLeft, getIconForIngredientType } from '../utils/ingredients';
 import { useRouter } from 'expo-router';
 import { useDeleteIngredient, useMarkAsUsed } from '../hooks/useIngredients';
+import { formatDate } from '../utils/date';
 
 interface IngredientCardProps {
   id: string;
@@ -92,7 +93,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
       <View style={styles.expirationContainer}>
         <View style={styles.expirationInfo}>
           <Icon source={GreenCalendar} size={15} />
-          <BodyText style={styles.expirationText}>Expires: {expirationDate}</BodyText>
+          <BodyText style={styles.expirationText}>Expires: {formatDate(new Date(expirationDate))}</BodyText>
         </View>
         <View style={styles.remainingDaysContainer}>
           <Icon source={BlackClock} size={13} />
