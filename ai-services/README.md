@@ -19,7 +19,7 @@ GOOGLE_API_KEY=your_google_api_key
 ROBOFLOW_API_KEY=your_roboflow_api_key
 BUCKET_NAME=user-images
 SUPABASE_URL=https://nhotuxtrsnxuxwlalept.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 Run FastAPI app (environment variables are auto-loaded from .env):

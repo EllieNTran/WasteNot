@@ -10,13 +10,12 @@ client = InferenceHTTPClient(
 )
 
 
-def run_ingredient_detection(image_path: str, auth_token: str = None):
+def run_ingredient_detection(image_path: str):
     """
     Detect ingredients in the given image using Roboflow Inference API.
 
     Args:
         image_path (str): Path to the image file in the Supabase bucket.
-        auth_token (str): Optional auth token for accessing the file.
     """
     with tempfile.NamedTemporaryFile(
         suffix=os.path.splitext(image_path)[-1], delete=False
@@ -24,7 +23,7 @@ def run_ingredient_detection(image_path: str, auth_token: str = None):
         temp_local_path = temp_file.name
 
     try:
-        retrieve_object_from_bucket(image_path, temp_local_path, auth_token)
+        retrieve_object_from_bucket(image_path, temp_local_path)
 
         result = client.run_workflow(
             workspace_name="sdl-wastenot",

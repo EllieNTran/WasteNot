@@ -48,7 +48,7 @@ async def detect_ingredients(request: IngredientDetectionRequest):
     """
     try:
         print("Received request for ingredient detection: ", request)
-        response = run_ingredient_detection(request.image, request.authToken)
+        response = run_ingredient_detection(request.image)
         return {"ingredients": response}
     except Exception as e:
         return {"error": str(e)}

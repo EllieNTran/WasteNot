@@ -12,11 +12,11 @@ const detectIngredients = async (file: Express.Multer.File, authToken?: string, 
   }
 
   try {
+    logger.info('Sending request to AI service for ingredient detection');
     const response = await axios.post<{ error?: string; message: string }>(
       `${AI_SERVICE_URL}/detect-ingredients`,
       {
-        image: uploadedFilePath,
-        authToken: authToken
+        image: uploadedFilePath
       }
     );
 

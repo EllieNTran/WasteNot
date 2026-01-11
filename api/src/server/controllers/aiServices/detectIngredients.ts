@@ -34,6 +34,7 @@ const controller = async (req: Request): Promise<ControllerResult> => {
 
   const detectedIngredients = await detectIngredients(req.file, authToken, userId);
   logger.debug('Detected ingredients', { detectedIngredients });
+
   if (detectedIngredients === null) {
     return {
       status: 500,

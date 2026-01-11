@@ -29,4 +29,3 @@ class IngredientDetectionRequest(BaseModel):  # pylint:disable=too-few-public-me
     """
 
     image: str = Field(..., example="path/to/image.jpg")
-    authToken: str | None = None
