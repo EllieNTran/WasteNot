@@ -13,7 +13,7 @@ const detectIngredients = async (file: Express.Multer.File, authToken?: string, 
 
   try {
     logger.info('Sending request to AI service for ingredient detection');
-    const response = await axios.post<{ error?: string; message: string }>(
+    const response = await axios.post<{ error?: string; ingredients: any }>(
       `${AI_SERVICE_URL}/detect-ingredients`,
       {
         image: uploadedFilePath
@@ -24,7 +24,7 @@ const detectIngredients = async (file: Express.Multer.File, authToken?: string, 
       throw new Error(response.data.error);
     }
 
-    return response.data.message;
+    return response.data.ingredients;
   } catch (error: any) {
     console.error('Error detecting ingredients:', error.message);
     return null

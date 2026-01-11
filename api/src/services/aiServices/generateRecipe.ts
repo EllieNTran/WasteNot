@@ -12,7 +12,7 @@ const generateRecipe = async (
 ): Promise<string | null> => {
   try {
     logger.info('Sending request to AI service for recipe generation');
-    const response = await axios.post<{ error?: string; message: string }>(
+    const response = await axios.post<{ error?: string; recipe: any }>(
       `${AI_SERVICE_URL}/generate-recipe`,
       {
         ingredients,
@@ -27,7 +27,7 @@ const generateRecipe = async (
       throw new Error(response.data.error);
     }
 
-    return response.data.message;
+    return response.data.recipe;
   } catch (error: any) {
     console.error('Error generating recipe:', error.message);
     return null
