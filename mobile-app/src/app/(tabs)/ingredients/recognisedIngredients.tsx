@@ -47,7 +47,7 @@ export default function RecognisedIngredientsScreen() {
   }, [uploadData]);
 
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <View style={styles.titleContainer}>
         <Link href="/ingredients/scan" asChild>
           <Pressable style={styles.backButton}>
@@ -76,10 +76,11 @@ export default function RecognisedIngredientsScreen() {
           recognisedIngredients.map((ingredient, index) => (
             <IngredientCard 
               key={index}
+              id={ingredient.id}
               ingredient={ingredient.name || 'Unknown'} 
-              iconSource={Vegetable} 
               quantity={ingredient.amount || 'N/A'} 
               expirationDate={ingredient.expiry_date || 'No date'} 
+              type={ingredient.type}
             />
           ))
         )}
@@ -89,11 +90,6 @@ export default function RecognisedIngredientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
-  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',

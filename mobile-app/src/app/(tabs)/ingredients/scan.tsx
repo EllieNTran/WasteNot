@@ -106,7 +106,7 @@ export default function ScanIngredientsScreen() {
   }
 
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Link href="/ingredients" asChild>
@@ -203,11 +203,6 @@ export default function ScanIngredientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
-  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,6 +304,8 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignItems: 'center',
     gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.light.text,
   },
   previewImage: {
     width: 288,

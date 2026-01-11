@@ -4,25 +4,48 @@ import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title } from '@/src/components/typography';
 import { Icon } from '@/src/components/icon';
-import { Link, useRouter } from 'expo-router';
+import { Link, useRouter, useLocalSearchParams } from 'expo-router';
 import { BackArrow, GreyCalendar } from '@/src/assets/icons'; 
 import { TextField } from '@/src/components/textField';
 import { StyledButton } from '@/src/components/styledButton';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { OptionButton } from '@/src/components/optionButton';
-import { addIngredient } from '@/src/lib/ingredients';
-import { getCurrentUser } from '@/src/lib/auth';
+import { useAddIngredient, useUpdateIngredient } from '@/src/hooks/useIngredients';
+import { useAuth } from '@/src/contexts/authContext';
 import { IngredientType } from '@/src/types/database.types';
+import { formatDate, formatDateForDB } from '@/src/utils/date';
+import { useEffect } from 'react';
 
 export default function AddIngredientScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const { userId } = useAuth();
+  const addIngredientMutation = useAddIngredient();
+  const updateIngredientMutation = useUpdateIngredient();
+
+  const isEdit = !!params.id;
+  const ingredientId = params.id as string | undefined;
+  
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [expiryDate, setExpiryDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [tempDate, setTempDate] = useState(new Date());
   const [selectedType, setSelectedType] = useState<IngredientType | null>(null);
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEdit && params) {
+      if (params.name) setName(params.name as string);
+      if (params.amount) setAmount(params.amount as string);
+      if (params.type) setSelectedType(params.type as IngredientType);
+      if (params.expiry_date) {
+        const date = new Date(params.expiry_date as string);
+        setExpiryDate(date);
+        setTempDate(date);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onDateChange = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
@@ -48,20 +71,22 @@ export default function AddIngredientScreen() {
     setShowDatePicker(false);
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
-
-  const formatDateForDB = (date: Date) => {
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD format
-  };
+  const getMutationOptions = (action: 'added' | 'updated') => ({
+    onSuccess: () => {
+      Alert.alert('Success', `Ingredient ${action} successfully!`, [
+        {
+          text: 'OK',
+          onPress: () => router.back(),
+        },
+      ]);
+    },
+    onError: (error: any) => {
+      console.error(`Error ${action.replace('ed', 'ing')} ingredient:`, error);
+      Alert.alert('Error', error.message || `Failed to ${action.replace('ed', '')} ingredient.`);
+    },
+  });
 
   const handleSave = async () => {
-    // Validation
     if (!name.trim()) {
       Alert.alert('Error', 'Please enter ingredient name');
       return;
@@ -72,45 +97,36 @@ export default function AddIngredientScreen() {
       return;
     }
 
-    setLoading(true);
+    if (!userId) {
+      Alert.alert('Error', 'You must be logged in');
+      return;
+    }
 
-    try {
-      // Get current user
-      const { user, error: userError } = await getCurrentUser();
-      
-      if (userError || !user) {
-        Alert.alert('Error', 'You must be logged in to add ingredients');
-        setLoading(false);
-        return;
-      }
-
-      // Add ingredient to database
-      const { data, error } = await addIngredient({
-        user_id: user.id,
-        name: name.trim(),
-        amount: amount.trim() || null,
-        type: selectedType,
-        expiry_date: formatDateForDB(expiryDate),
-        status: 'available',
-      });
-
-      if (error) {
-        console.error('Error adding ingredient:', error);
-        Alert.alert('Error', 'Failed to add ingredient. Please try again.');
-      } else {
-        console.log('Ingredient added successfully:', data);
-        Alert.alert('Success', 'Ingredient added successfully!', [
-          {
-            text: 'OK',
-            onPress: () => router.back(),
+    if (isEdit && ingredientId) {
+      updateIngredientMutation.mutate(
+        {
+          id: ingredientId,
+          updates: {
+            name: name.trim(),
+            amount: amount.trim() || null,
+            type: selectedType,
+            expiry_date: formatDateForDB(expiryDate),
           },
-        ]);
-      }
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      Alert.alert('Error', 'An unexpected error occurred');
-    } finally {
-      setLoading(false);
+        },
+        getMutationOptions('updated')
+      );
+    } else {
+      addIngredientMutation.mutate(
+        {
+          user_id: userId,
+          name: name.trim(),
+          amount: amount.trim() || null,
+          type: selectedType,
+          expiry_date: formatDateForDB(expiryDate),
+          status: 'available',
+        },
+        getMutationOptions('added')
+      );
     }
   };
 
@@ -119,7 +135,7 @@ export default function AddIngredientScreen() {
   };
 
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Link href="/ingredients" asChild>
@@ -128,7 +144,7 @@ export default function AddIngredientScreen() {
             </Pressable>
           </Link>
           <View style={styles.titleWrapper}>
-            <Title color={Colors.dark.text}>Add Ingredient</Title>
+            <Title color={Colors.dark.text}>{isEdit ? 'Edit' : 'Add'} Ingredient</Title>
           </View>
         </View>
       </View>
@@ -183,11 +199,11 @@ export default function AddIngredientScreen() {
 
       <View style={styles.buttonsContainer}>
         <StyledButton 
-          title={loading ? "Saving..." : "Save"}
+          title={(addIngredientMutation.isPending || updateIngredientMutation.isPending) ? "Saving..." : "Save"}
           onPress={handleSave}
           buttonStyle={styles.button}
           textStyle={styles.buttonText}
-          disabled={loading}
+          disabled={addIngredientMutation.isPending || updateIngredientMutation.isPending}
         />
         <StyledButton
           title="Cancel"
@@ -197,7 +213,7 @@ export default function AddIngredientScreen() {
           buttonStyle={styles.button}
           textStyle={styles.buttonText}
           hasBorder
-          disabled={loading}
+          disabled={addIngredientMutation.isPending || updateIngredientMutation.isPending}
         />
       </View>
 
@@ -250,11 +266,6 @@ export default function AddIngredientScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
-  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',

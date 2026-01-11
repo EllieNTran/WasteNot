@@ -49,7 +49,7 @@ export default function GenerateRecipeScreen() {
   };
 
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <Title color={Colors.dark.text}>Generate Recipe</Title>
       <BodyText color={Colors.dark.text} style={styles.information}>
         Point your camera at your fridge or cupboard.{'\n'}
@@ -197,10 +197,6 @@ export default function GenerateRecipeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
   information: {
     marginTop: 8,
     fontWeight: '300',

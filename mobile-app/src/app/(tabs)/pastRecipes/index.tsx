@@ -5,20 +5,11 @@ import { BodyText, Title } from '@/src/components/typography';
 
 export default function PastRecipesScreen() {
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <Title color={Colors.dark.text}>Past Recipes</Title>
     </MainView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
-  },
-  logo: {
-    height: 178,
-    width: 290,
-  }
 });

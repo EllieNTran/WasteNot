@@ -7,44 +7,15 @@ import { Icon } from '@/src/components/icon';
 import { Link } from 'expo-router';
 import { Add, Camera, Vegetable } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
-import { useAuth } from '@/src/contexts/authContext';
-import { getIngredients, Ingredient } from '@/src/lib/ingredients';
-import { useEffect, useState } from 'react';
+import { useIngredients } from '@/src/hooks/useIngredients';
 
 export default function IngredientsScreen() {
-  const { userId } = useAuth();
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchIngredients = async () => {
-      setLoading(true);
-      const { data, error } = await getIngredients(userId);
-      
-      if (error) {
-        console.error('Error fetching ingredients:', error);
-        setError(error.message);
-      } else {
-        setIngredients(data || []);
-      }
-      setLoading(false);
-    };
-
-    fetchIngredients();
-  }, [userId]);
-
-  console.log('Ingredients:', ingredients);
+  const { data: ingredients = [], isLoading: loading, error } = useIngredients();
 
   return (
-    <MainView style={styles.container}>
+    <MainView>
       <View style={styles.titleContainer}>
-        <Link href="/ingredients/add" asChild>
+        <Link href="/ingredients/ingredient" asChild>
           <Pressable>
             <Icon source={Add} style={styles.addIcon}/>
           </Pressable>
@@ -61,18 +32,20 @@ export default function IngredientsScreen() {
         {loading ? (
           <ActivityIndicator size="large" color={Colors.light.text} />
         ) : error ? (
-          <BodyText color={Colors.light.text}>{error}</BodyText>
+          <BodyText color={Colors.light.text}>{error.message}</BodyText>
         ) : ingredients.length === 0 ? (
           <BodyText color={Colors.light.text}>No ingredients yet. Add some!</BodyText>
         ) : (
           ingredients.map((ingredient) => (
-            <IngredientCard 
-              key={ingredient.id}
-              ingredient={ingredient.name} 
-              quantity={ingredient.amount || 'N/A'} 
-              expirationDate={ingredient.expiry_date || 'No date'}
-              type={ingredient.type}
-            />
+            <View style={styles.ingredientCard} key={ingredient.id}>
+              <IngredientCard 
+                id={ingredient.id}
+                ingredient={ingredient.name} 
+                quantity={ingredient.amount || 'N/A'} 
+                expirationDate={ingredient.expiry_date || 'No date'}
+                type={ingredient.type}
+              />
+            </View>
           ))
         )}
       </View>
@@ -81,11 +54,6 @@ export default function IngredientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: Colors.light.background,
-  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -106,5 +74,8 @@ const styles = StyleSheet.create({
   ingredientsContainer: {
     marginTop: 18,
     width: '100%',
+  },
+  ingredientCard: {
+    marginBottom: 12,
   }
 });

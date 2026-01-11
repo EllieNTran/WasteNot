@@ -37,7 +37,6 @@ export interface IngredientUpdate {
   confidence?: number | null;
 }
 
-// Get all available ingredients for a user
 export const getIngredients = async (userId: string) => {
   const { data, error } = await supabase
     .from('ingredients')
@@ -50,7 +49,6 @@ export const getIngredients = async (userId: string) => {
   return { data: data as Ingredient[] | null, error };
 };
 
-// Get ingredients expiring soon (within 3 days)
 export const getExpiringSoon = async (userId: string) => {
   const threeDaysFromNow = new Date();
   threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
@@ -63,12 +61,11 @@ export const getExpiringSoon = async (userId: string) => {
     .is('deleted_at', null)
     .lte('expiry_date', threeDaysFromNow.toISOString().split('T')[0])
     .order('expiry_date', { ascending: true })
-    .limit(3);
+    .limit(5);
   
   return { data: data as Ingredient[] | null, error };
 };
 
-// Get ingredients by type
 export const getIngredientsByType = async (userId: string, type: string) => {
   const { data, error } = await supabase
     .from('ingredients')
@@ -81,7 +78,6 @@ export const getIngredientsByType = async (userId: string, type: string) => {
   return { data: data as Ingredient[] | null, error };
 };
 
-// Add new ingredient
 export const addIngredient = async (ingredient: IngredientInsert) => {
   const { data, error } = await supabase
     .from('ingredients')
@@ -92,7 +88,6 @@ export const addIngredient = async (ingredient: IngredientInsert) => {
   return { data: data as Ingredient | null, error };
 };
 
-// Update ingredient
 export const updateIngredient = async (id: string, updates: IngredientUpdate) => {
   const { data, error } = await supabase
     .from('ingredients')
@@ -104,7 +99,6 @@ export const updateIngredient = async (id: string, updates: IngredientUpdate) =>
   return { data: data as Ingredient | null, error };
 };
 
-// Delete ingredient (soft delete)
 export const deleteIngredient = async (id: string) => {
   const { data, error } = await supabase
     .from('ingredients')
@@ -116,17 +110,14 @@ export const deleteIngredient = async (id: string) => {
   return { data: data as Ingredient | null, error };
 };
 
-// Mark ingredient as used
 export const markAsUsed = async (id: string) => {
   return updateIngredient(id, { status: 'used' });
 };
 
-// Mark ingredient as discarded
 export const markAsDiscarded = async (id: string) => {
   return updateIngredient(id, { status: 'discarded' });
 };
 
-// Get ingredient statistics
 export const getIngredientStats = async (userId: string) => {
   const { data: available } = await supabase
     .from('ingredients')

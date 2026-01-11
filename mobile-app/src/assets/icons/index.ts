@@ -30,3 +30,7 @@ export const Dairy = require('./dairy.png');
 export const Meat = require('./meat.png');
 export const Fruit = require('./fruit.png');
 export const RightArrow = require('./rightArrow.png');
+export const Save = require('./save.png');
+export const Checked = require('./checked.png');
+export const AddMissing = require('./addMissing.png');
+export const GreyClock = require('./greyClock.png');

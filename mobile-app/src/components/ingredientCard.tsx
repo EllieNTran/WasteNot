@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View, Pressable, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Pressable, ImageSourcePropType, Modal } from 'react-native';
 import { Colors } from '../constants/theme';
 import { Icon } from './icon';
-import { BodyText } from './typography';
+import { BodyText, Title } from './typography';
 import { BlackClock, GreenCalendar, Edit, Bin, Ingredients } from '@/src/assets/icons';
 import { calculateDaysLeft, getIconForIngredientType } from '../utils/ingredients';
+import { useRouter } from 'expo-router';
+import { useDeleteIngredient } from '../hooks/useIngredients';
 
 interface IngredientCardProps {
+  id: string;
   ingredient: string;
   quantity: string;
   expirationDate: string;
   type: string;
 }
 
-export default function IngredientCard({ ingredient, quantity, expirationDate, type }: IngredientCardProps) {
+export default function IngredientCard({ id, ingredient, quantity, expirationDate, type }: IngredientCardProps) {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [iconSource, setIconSource] = useState<ImageSourcePropType>(Ingredients);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const router = useRouter();
+  const deleteIngredientMutation = useDeleteIngredient();
 
   useEffect(() => {
     const days = calculateDaysLeft(expirationDate);
@@ -25,6 +31,39 @@ export default function IngredientCard({ ingredient, quantity, expirationDate, t
   useEffect(() => {
     setIconSource(getIconForIngredientType(type));
   }, [type]);
+
+  const handleEdit = () => {
+    router.push({
+      pathname: '/ingredients/ingredient',
+      params: {
+        id,
+        name: ingredient,
+        amount: quantity,
+        type,
+        expiry_date: expirationDate,
+      },
+    });
+  };
+
+  const handleDeletePress = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteIngredientMutation.mutate(id, {
+      onSuccess: () => {
+        setShowDeleteModal(false);
+      },
+      onError: (error) => {
+        console.error('Error deleting ingredient:', error);
+        setShowDeleteModal(false);
+      },
+    });
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -37,8 +76,12 @@ export default function IngredientCard({ ingredient, quantity, expirationDate, t
           <BodyText style={styles.quantityText}>Quantity: {quantity}</BodyText>
         </View>
         <View style={styles.actionsContainer}>
-          <Icon source={Edit} size={20} />
-          <Icon source={Bin} size={20} />
+          <Pressable onPress={handleEdit}>
+            <Icon source={Edit} size={20} />
+          </Pressable>
+          <Pressable onPress={handleDeletePress}>
+            <Icon source={Bin} size={20} />
+          </Pressable>
         </View>
       </View>
       <View style={styles.expirationContainer}>
@@ -56,6 +99,36 @@ export default function IngredientCard({ ingredient, quantity, expirationDate, t
       <Pressable style={styles.markAsUsedButton}>
         <BodyText style={styles.markAsUsedText}>Mark as Used</BodyText>
       </Pressable>
+
+      <Modal
+        visible={showDeleteModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelDelete}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.deleteCard}>
+            <Title color={Colors.dark.text}>
+              Delete Ingredient?
+            </Title>
+            <BodyText color={Colors.dark.text} style={styles.deleteText}>
+              Are you sure you want to delete {ingredient}? This action cannot be undone.
+            </BodyText>
+            <View style={styles.buttonContainer}>
+              <Pressable style={styles.cancelButton} onPress={handleCancelDelete}>
+                <BodyText color={Colors.dark.text}>
+                  Cancel
+                </BodyText>
+              </Pressable>
+              <Pressable style={styles.deleteButton} onPress={handleConfirmDelete}>
+                <BodyText color={Colors.light.text}>
+                  Delete
+                </BodyText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -148,5 +221,46 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 6,
     alignItems: 'center',
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  deleteCard: {
+    backgroundColor: Colors.dark.background,
+    borderRadius: 10,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.light.text,
+  },
+  deleteText: {
+    textAlign: 'center',
+    fontSize: 15,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 40,
+    backgroundColor: Colors.light.secondaryGreen,
+    alignItems: 'center',
+  },
+  deleteButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 40,
+    backgroundColor: Colors.light.background,
+    alignItems: 'center',
+  },
 });

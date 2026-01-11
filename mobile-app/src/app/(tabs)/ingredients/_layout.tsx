@@ -5,7 +5,7 @@ export default function IngredientsLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="scan" />
-      <Stack.Screen name="add" />
+      <Stack.Screen name="ingredient" />
       <Stack.Screen name="recognisedIngredients" />
     </Stack>
   );

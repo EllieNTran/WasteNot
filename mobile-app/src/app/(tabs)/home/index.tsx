@@ -10,7 +10,7 @@ import { getProfile } from '@/src/lib/profiles';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/contexts/authContext';
-import { getExpiringSoon } from '@/src/lib/ingredients';
+import { useExpiringSoon } from '@/src/hooks/useIngredients';
 import { calculateDaysLeft } from '@/src/utils/ingredients';
 
 const Statistic = ({
@@ -50,26 +50,9 @@ const ShortcutButton = ({
 export default function HomeScreen() {
   const [fullName, setFullName] = useState<string>('User');
   const [loading, setLoading] = useState(true);
-  const [expiringSoonIngredients, setExpiringSoonIngredients] = useState<any[]>([]);
+  const { data: expiringSoonIngredients = [] } = useExpiringSoon();
   const router = useRouter();
   const { user } = useAuth();
-
-  useEffect(() => {
-    async function loadExpiringSoonIngredients() {
-      if (!user) return;
-      const { data, error } = await getExpiringSoon(user.id);
-
-      if (error) {
-        console.error('Error fetching expiring soon ingredients:', error);
-      } else {
-        setExpiringSoonIngredients(data || []);
-      }
-    }
-
-    loadExpiringSoonIngredients();
-  }, [user]);
-
-  console.log('Expiring Soon Ingredients:', expiringSoonIngredients);
 
   useEffect(() => {
     async function loadProfile() {
@@ -121,9 +104,9 @@ export default function HomeScreen() {
           onPress={() => router.push('/ingredients/scan')}
         />
         <ShortcutButton
-          title="Add Ingredient"
+          title="Generate Recipe"
           iconSource={Recipe}
-          onPress={() => router.push('/ingredients/add')}
+          onPress={() => router.push('/generateRecipe')}
         />
       </View>
 
@@ -132,15 +115,16 @@ export default function HomeScreen() {
         <View>
           {expiringSoonIngredients.length !== 0 && (
             expiringSoonIngredients.map((ingredient) => {
-              const daysLeft = calculateDaysLeft(ingredient.expiry_date);
+              const daysLeft = calculateDaysLeft(ingredient.expiry_date || 'No date');
               return (
-                <Card 
-                  key={ingredient.id}
-                  iconSource={Vegetable}
-                  text={ingredient.name}
-                  caption={`Expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}
-                  onNavigatePress={() => router.navigate('/(tabs)/ingredients')}
-                />
+                <View key={ingredient.id} style={styles.ingredientCard}>
+                  <Card
+                    iconSource={Vegetable}
+                    text={ingredient.name}
+                    caption={`Expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}
+                    onNavigatePress={() => router.navigate('/(tabs)/ingredients')}
+                  />
+                </View>
               );
             })
           )}
@@ -172,10 +156,6 @@ const styles = StyleSheet.create({
   },
   settingsIcon: {
     marginTop: -28,
-  },
-  logo: {
-    height: 178,
-    width: 290,
   },
   impactContainer: {
     width: '100%',
@@ -228,5 +208,8 @@ const styles = StyleSheet.create({
   },
   expiringSoonContainer: {
     width: '100%',
+  },
+  ingredientCard: {
+    marginBottom: 12,
   }
 });
