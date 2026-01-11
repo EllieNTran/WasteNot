@@ -8,7 +8,9 @@ from app.services.llm import get_llm
 from app.services.embeddings import generate_embedding
 
 model = get_llm()
-client: Client = create_client(settings.supabase_url, settings.supabase_anon_key)
+client: Client = create_client(
+    settings.supabase_url, settings.supabase_service_role_key
+)
 
 
 def search_recipes_by_ingredients(ingredients: list[str], top_k: int = 5) -> list[dict]:
@@ -46,17 +48,35 @@ def run_recipe_generation_agent(
         meal_type (str): Type of meal (e.g., breakfast, lunch, dinner).
         cooking_time (str): Desired cooking time.
     """
-    example_recipes = search_recipes_by_ingredients(ingredients)
+    example_recipes = search_recipes_by_ingredients(ingredients=ingredients)
     print(f"Found {len(example_recipes)} example recipes for context.")
 
-    message = f"""
-    Create a detailed {meal_type} recipe that can be prepared in {cooking_time}.
-    Use the following ingredients: {', '.join(ingredients)}.
-    Consider these dietary preferences: {', '.join(dietary_preferences)}.
-    Avoid these allergies: {', '.join(allergies)}.
-    Provide step-by-step cooking instructions and a list of required ingredients with quantities.
-    Use these example recipes for inspiration: {example_recipes}
-    """
+    parts = ["Create a detailed recipe"]
+    if meal_type:
+        parts.append(f"for {meal_type}")
+    if cooking_time:
+        parts.append(f"that can be prepared in {cooking_time}")
+
+    lines = [
+        " ".join(parts) + ".",
+        f"Use the following ingredients: {', '.join(ingredients)}.",
+    ]
+
+    if dietary_preferences:
+        lines.append(
+            f"Consider these dietary preferences: {', '.join(dietary_preferences)}."
+        )
+    if allergies:
+        lines.append(f"Avoid these allergies: {', '.join(allergies)}.")
+
+    lines.extend(
+        [
+            "Provide step-by-step cooking instructions and a list of required ingredients with quantities.",
+            f"Use these example recipes for inspiration: {example_recipes}",
+        ]
+    )
+
+    message = "\n".join(lines)
 
     agent = create_agent(
         model,

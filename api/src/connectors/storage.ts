@@ -23,14 +23,12 @@ export const putObject = async (
   logger.debug('Putting object', { operationName, bucket, key })
 
   try {
-    // Create Supabase client with user's auth token
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: {
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
       },
     })
 
-    // Convert readable stream to buffer
     const chunks: Buffer[] = []
     for await (const chunk of body) {
       chunks.push(Buffer.from(chunk))

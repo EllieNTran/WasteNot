@@ -1,9 +1,12 @@
 import detectIngredients from './detectIngredients';
+import generateRecipe from './generateRecipe';
 
 export default {
-  detectIngredients
+  detectIngredients,
+  generateRecipe,
 }
 
 export {
-  detectIngredients
+  detectIngredients,
+  generateRecipe,
 }

@@ -3,7 +3,7 @@ import { apiFetch } from '@/src/utils/fetch';
 import { supabase } from '@/src/lib/supabase';
 
 interface DetectIngredientsResponse {
-  fileId: string;
+  detectedIngredients: any;
 }
 
 type UploadFile = {
@@ -73,22 +73,22 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Upload failed:', errorText);
-      throw new Error(`Upload failed: ${errorText}`);
+      console.error('Ingredient detection failed:', errorText);
+      throw new Error(`Ingredient detection failed: ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('Upload successful:', result);
+    console.log('Ingredient detection successful:', result);
     return result;
   } catch (error) {
     clearTimeout(timeoutId);
     
     if (error instanceof Error && error.name === 'AbortError') {
-      console.error('Upload timed out after 30 seconds');
-      throw new Error('Upload request timed out. Please check your connection and try again.');
+      console.error('Ingredient detection timed out after 30 seconds');
+      throw new Error('Ingredient detection request timed out. Please check your connection and try again.');
     }
     
-    console.error('Upload request error:', error);
+    console.error('Ingredient detection request error:', error);
     throw error;
   }
 };

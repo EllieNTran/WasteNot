@@ -9,7 +9,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
 import Card from '@/src/components/card';
 import * as ImagePicker from 'expo-image-picker';
-import { useDetectIngredients } from '../../../services/ingredientsConnectors';
+import { useDetectIngredients } from '../../../services/detectIngredients';
 
 export default function ScanIngredientsScreen() {
   const [permission, requestPermission] = useCameraPermissions();
