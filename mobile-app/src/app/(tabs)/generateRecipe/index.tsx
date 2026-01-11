@@ -48,6 +48,16 @@ export default function GenerateRecipeScreen() {
       {
         onSuccess: (data) => {
           console.log('Recipe generated:', data);
+          
+          if (!data || !data.recipe) {
+            Toast.show({
+              type: 'error',
+              text1: 'Generation Failed',
+              text2: 'No recipe data received from server',
+            });
+            return;
+          }
+          
           router.push({
             pathname: '/generateRecipe/recipe',
             params: {
@@ -428,8 +438,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   loadingContainer: {
-    marginTop: 20,
+    flex: 1,
+    marginTop: 100,
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
   },
   loadingText: {
