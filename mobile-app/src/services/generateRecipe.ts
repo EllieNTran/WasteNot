@@ -21,6 +21,11 @@ const generateRecipe = async ({
   cookingTime,
 }: GenerateRecipeRequest): Promise<GenerateRecipeResponse> => {
   console.log('Sending request to API...');
+  console.log('Ingredients:', ingredients);
+  console.log('Dietary Preferences:', dietaryPreferences);
+  console.log('Allergies:', allergies);
+  console.log('Meal Type:', mealType);
+  console.log('Cooking Time:', cookingTime);
   
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
@@ -28,6 +33,9 @@ const generateRecipe = async ({
   try {
     const response = await apiFetch('ai/generate-recipe', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         ingredients,
         dietary_preferences: dietaryPreferences,
@@ -43,22 +51,22 @@ const generateRecipe = async ({
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Upload failed:', errorText);
-      throw new Error(`Upload failed: ${errorText}`);
+      console.error('Recipe generation failed:', errorText);
+      throw new Error(`Recipe generation failed: ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('Upload successful:', result);
+    console.log('Recipe generation successful:', result);
     return result;
   } catch (error) {
     clearTimeout(timeoutId);
     
     if (error instanceof Error && error.name === 'AbortError') {
-      console.error('Upload timed out after 30 seconds');
-      throw new Error('Upload request timed out. Please check your connection and try again.');
+      console.error('Recipe generation timed out after 2 minutes');
+      throw new Error('Recipe generation is taking longer than expected. Please try again later.');
     }
     
-    console.error('Upload request error:', error);
+    console.error('Recipe generation request error:', error);
     throw error;
   }
 };

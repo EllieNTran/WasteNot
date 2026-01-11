@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Modal, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, Modal, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
@@ -7,26 +7,65 @@ import { StyledButton } from '@/src/components/styledButton';
 import { Icon } from '@/src/components/icon';
 import { WhiteWand, DownArrow } from '@/src/assets/icons';
 import { OptionButton } from '@/src/components/optionButton';
-
-// Mock ingredients data - replace with actual data
-const mockIngredients = [
-  'Tomatoes',
-  'Chicken',
-  'Rice',
-  'Onions',
-  'Garlic',
-  'Pasta',
-  'Cheese',
-  'Beef',
-  'Potatoes',
-  'Carrots',
-];
+import { useIngredients } from '@/src/hooks/useIngredients';
+import { useGenerateRecipe } from '@/src/services/generateRecipe';
+import { useRouter } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 export default function GenerateRecipeScreen() {
+  const router = useRouter();
+  const { data: ingredients = [] } = useIngredients();
+  const generateRecipeMutation = useGenerateRecipe();
   const [mealType, setMealType] = useState<'Breakfast' | 'Lunch' | 'Dinner'>('Breakfast');
   const [cookTime, setCookTime] = useState<'Quick' | 'Regular' | 'Long'>('Regular');
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const availableIngredients = ingredients
+    .filter(ing => ing.status === 'available')
+    .map(ing => ing.name);
+
+  const handleGenerateRecipe = async () => {
+    const ingredientsToUse = selectedIngredients.length > 0 ? selectedIngredients : availableIngredients;
+    
+    if (ingredientsToUse.length === 0) {
+      Toast.show({
+        type: 'error',
+        text1: 'No Ingredients',
+        text2: 'Please add some ingredients first',
+      });
+      return;
+    }
+
+    generateRecipeMutation.mutate(
+      {
+        ingredients: ingredientsToUse,
+        dietaryPreferences: [],
+        allergies: [],
+        mealType: mealType,
+        cookingTime: cookTime,
+      },
+      {
+        onSuccess: (data) => {
+          console.log('Recipe generated:', data);
+          router.push({
+            pathname: '/generateRecipe/recipe',
+            params: {
+              recipeData: JSON.stringify(data.recipe),
+            },
+          });
+        },
+        onError: (error) => {
+          console.error('Error generating recipe:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Generation Failed',
+            text2: error.message || 'Failed to generate recipe',
+          });
+        },
+      }
+    );
+  };
 
   const isAllIngredientsSelected = !selectedIngredients || selectedIngredients.length === 0;
 
@@ -56,7 +95,15 @@ export default function GenerateRecipeScreen() {
         Our model will automatically detect your ingredients.
       </BodyText>
 
-      <View style={styles.section}>
+      {generateRecipeMutation.isPending ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.icon} />
+          <BodyText color={Colors.light.text} style={styles.loadingText}>
+            Generating your recipe...
+          </BodyText>
+        </View>
+      ) : (
+        <View style={styles.section}>
         <Subtitle color={Colors.light.text} style={styles.sectionTitle}>Recipe Preferences</Subtitle>
         <View style={styles.card}>
           <BodyText style={styles.cardTitle}>Selected Ingredients</BodyText>
@@ -133,12 +180,15 @@ export default function GenerateRecipeScreen() {
 
       <StyledButton
         backgroundColor={Colors.dark.background}
-        title="Generate Recipe"
+        title={"Generate Recipe"}
         buttonStyle={styles.generateButton}
         textStyle={styles.generateButtonText}
-        iconSource={WhiteWand}
+        iconSource={generateRecipeMutation.isPending ? undefined : WhiteWand}
+        onPress={handleGenerateRecipe}
+        disabled={generateRecipeMutation.isPending}
       />
       </View>
+      )}
 
       <Modal
         visible={dropdownVisible}
@@ -159,7 +209,7 @@ export default function GenerateRecipeScreen() {
               </Pressable>
             </View>
             <FlatList
-              data={mockIngredients}
+              data={availableIngredients}
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
@@ -376,5 +426,14 @@ const styles = StyleSheet.create({
   },
   generateButtonText: {
     fontSize: 18,
+  },
+  loadingContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
