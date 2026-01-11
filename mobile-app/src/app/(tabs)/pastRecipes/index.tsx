@@ -1,7 +1,7 @@
-import { StyleSheet, Image, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
-import { BodyText, Title } from '@/src/components/typography';
+import { Title } from '@/src/components/typography';
 
 export default function PastRecipesScreen() {
   return (
@@ -10,6 +10,3 @@ export default function PastRecipesScreen() {
     </MainView>
   );
 }
-
-const styles = StyleSheet.create({
-});

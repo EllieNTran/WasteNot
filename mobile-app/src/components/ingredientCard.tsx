@@ -6,7 +6,7 @@ import { BodyText, Title } from './typography';
 import { BlackClock, GreenCalendar, Edit, Bin, Ingredients } from '@/src/assets/icons';
 import { calculateDaysLeft, getIconForIngredientType } from '../utils/ingredients';
 import { useRouter } from 'expo-router';
-import { useDeleteIngredient } from '../hooks/useIngredients';
+import { useDeleteIngredient, useMarkAsUsed } from '../hooks/useIngredients';
 
 interface IngredientCardProps {
   id: string;
@@ -22,6 +22,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const router = useRouter();
   const deleteIngredientMutation = useDeleteIngredient();
+  const markAsUsedMutation = useMarkAsUsed();
 
   useEffect(() => {
     const days = calculateDaysLeft(expirationDate);
@@ -65,6 +66,10 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
     setShowDeleteModal(false);
   };
 
+  const handleMarkAsUsed = () => {
+    markAsUsedMutation.mutate(id);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -96,7 +101,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
           </BodyText>
         </View>
       </View>
-      <Pressable style={styles.markAsUsedButton}>
+      <Pressable style={styles.markAsUsedButton} onPress={handleMarkAsUsed}>
         <BodyText style={styles.markAsUsedText}>Mark as Used</BodyText>
       </Pressable>
 

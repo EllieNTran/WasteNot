@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getIngredients, getExpiringSoon, addIngredient, updateIngredient, deleteIngredient, Ingredient, IngredientInsert, IngredientUpdate } from '@/src/lib/ingredients';
+import { getIngredients, getExpiringSoon, addIngredient, updateIngredient, deleteIngredient, markAsUsed, Ingredient, IngredientInsert, IngredientUpdate } from '@/src/lib/ingredients';
 import { useAuth } from '@/src/contexts/authContext';
 
 export const INGREDIENTS_QUERY_KEY = 'ingredients';
@@ -80,6 +80,23 @@ export const useDeleteIngredient = () => {
   return useMutation<any, Error, string>({
     mutationFn: async (id: string) => {
       const { data, error } = await deleteIngredient(id);
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY, userId] });
+    },
+  });
+};
+
+export const useMarkAsUsed = () => {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+
+  return useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
+      const { data, error } = await markAsUsed(id);
       if (error) throw new Error(error.message);
       return data;
     },
