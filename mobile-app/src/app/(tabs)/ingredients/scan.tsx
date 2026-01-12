@@ -82,7 +82,7 @@ export default function ScanIngredientsScreen() {
 
     detectIngredientsMutation.mutate(file, {
         onSuccess: (data) => {
-          if (!data || !data.ingredients) {
+          if (!data || !data.detectedIngredients) {
             Toast.show({
               type: 'error',
               text1: 'Ingredient Detection Failed',
@@ -94,7 +94,7 @@ export default function ScanIngredientsScreen() {
           router.push({
             pathname: '/ingredients/recognisedIngredients',
             params: {
-              ingredientsData: JSON.stringify(data.ingredients),
+              ingredientsData: JSON.stringify(data.detectedIngredients),
             },
           });
         },
