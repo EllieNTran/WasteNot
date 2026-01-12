@@ -1,17 +1,18 @@
-from langchain.agents import create_agent
-from langchain.agents.structured_output import ToolStrategy
+import logging
 from supabase import create_client, Client
 
 from app.models.outputs import RecipeGenerationOutput
 from app.settings import settings
 from app.services.llm import get_llm
 from app.services.embeddings import generate_embedding
+from app.services.get_recipe_image import get_recipe_image
+
+logger = logging.getLogger(__name__)
 
 model = get_llm()
 client: Client = create_client(
     settings.supabase_url, settings.supabase_service_role_key
 )
-
 
 def search_recipes_by_ingredients(ingredients: list[str], top_k: int = 5) -> list[dict]:
     """Performs a vector similarity search in Supabase recipes table based on user ingredients.
@@ -28,11 +29,11 @@ def search_recipes_by_ingredients(ingredients: list[str], top_k: int = 5) -> lis
         return response.data
 
     except Exception as e:
-        print(f"Error searching recipes: {e}")
+        logger.warning(f"Error searching recipes: {e}")
         return []
 
 
-def run_recipe_generation_agent(
+def run_recipe_generation(
     ingredients: list,
     dietary_preferences: list,
     allergies: list,
@@ -49,9 +50,9 @@ def run_recipe_generation_agent(
         cooking_time (str): Desired cooking time.
     """
     example_recipes = search_recipes_by_ingredients(ingredients=ingredients)
-    print(f"Found {len(example_recipes)} example recipes for context.")
+    logger.info(f"Found {len(example_recipes)} example recipes for context.")
 
-    parts = ["Create a detailed recipe"]
+    parts = ["You are an expert at creating detailed recipes. Create a recipe"]
     if meal_type:
         parts.append(f"for {meal_type}")
     if cooking_time:
@@ -72,18 +73,19 @@ def run_recipe_generation_agent(
     lines.extend(
         [
             "Provide step-by-step cooking instructions and a list of required ingredients with quantities.",
+            "For ingredients, provide two separate lists:",
+            "1. ingredient_parts: just the ingredient names (e.g., 'chicken breast', 'cabbage', 'onion')",
+            "2. ingredients: full ingredient details with quantities (e.g., '200g chicken breast', '1 head cabbage', '1 medium onion')",
             f"Use these example recipes for inspiration: {example_recipes}",
+            "Use the get_recipe_image tool to fetch an appropriate image for the recipe you create.",
         ]
     )
+    prompt = "\n".join(lines)
 
-    message = "\n".join(lines)
+    logger.info("Generating recipe...")
+    recipe = model.with_structured_output(RecipeGenerationOutput).invoke(prompt)
 
-    agent = create_agent(
-        model,
-        tools=[],
-        system_prompt="You are an expert at creating custom recipes based on user preferences.",
-        response_format=ToolStrategy(RecipeGenerationOutput),
-    )
-    result = agent.invoke({"messages": [{"role": "user", "content": message}]})
+    image_url = get_recipe_image(recipe.title, recipe.ingredient_parts)
+    recipe.image_url = image_url
 
-    return result["structured_response"]
+    return recipe

@@ -1,9 +1,12 @@
 import tempfile
+import logging
 import os
 from inference_sdk import InferenceHTTPClient
 
 from app.settings import settings
 from app.connectors.storage import retrieve_object_from_bucket
+
+logger = logging.getLogger("template")
 
 client = InferenceHTTPClient(
     api_url="https://serverless.roboflow.com", api_key=settings.roboflow_api_key
@@ -11,8 +14,7 @@ client = InferenceHTTPClient(
 
 
 def run_ingredient_detection(image_path: str):
-    """
-    Detect ingredients in the given image using Roboflow Inference API.
+    """Detect ingredients in the given image using Roboflow Inference API.
 
     Args:
         image_path (str): Path to the image file in the Supabase bucket.
@@ -24,6 +26,7 @@ def run_ingredient_detection(image_path: str):
 
     try:
         retrieve_object_from_bucket(image_path, temp_local_path)
+        logger.info("Detecting ingredients...")
 
         result = client.run_workflow(
             workspace_name="sdl-wastenot",
@@ -31,9 +34,8 @@ def run_ingredient_detection(image_path: str):
             images={"image": temp_local_path},
             use_cache=True,
         )
-
         ingredients_list = extract_ingredients(result[0])
-        print("Detected ingredients: ", ingredients_list)
+
         return ingredients_list
     finally:
         if os.path.exists(temp_local_path):
@@ -41,8 +43,7 @@ def run_ingredient_detection(image_path: str):
 
 
 def extract_ingredients(result):
-    """
-    Extracts unique ingredient names (confidence >= 0.7) from Roboflow result.
+    """Extracts unique ingredient names (confidence >= 0.7) from Roboflow result.
 
     Args:
         result (dict): The result returned by Roboflow workflow.
@@ -50,6 +51,7 @@ def extract_ingredients(result):
     Returns:
         List of dicts: [{'ingredient': ...}, ...]
     """
+    logger.info("Extracting ingredients from detection result")
     predictions = result.get("predictions", {}).get("predictions", [])
     seen = set()
     ingredients = []

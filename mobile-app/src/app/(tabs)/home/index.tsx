@@ -5,7 +5,7 @@ import { MainView } from '@/src/components/mainView';
 import { BodyText, Subtitle, Title } from '@/src/components/typography';
 import Card from '@/src/components/card';
 import { Icon } from '@/src/components/icon';
-import { Settings, Clock, Ingredients, Recipe, Vegetable } from '@/src/assets/icons';
+import { Settings, Clock, Ingredients, Recipe } from '@/src/assets/icons';
 import { getProfile } from '@/src/lib/profiles';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -68,7 +68,7 @@ export default function HomeScreen() {
     }
 
     loadProfile();
-  }, []);
+  }, [user]);
 
   return (
     <MainView style={styles.container}>
@@ -89,7 +89,7 @@ export default function HomeScreen() {
         end={{ x: 1, y: 0 }}
         style={styles.impactContainer}
       >
-        <Subtitle color={Colors.dark.text}>This Month's Impact</Subtitle>
+        <Subtitle color={Colors.dark.text}>{"This Month's Impact"}</Subtitle>
         <View style={styles.allStatisticsContainer}>
           <Statistic value="1.2kg" label="Food Saved" />
           <Statistic value="5.8kg" label="CO₂ Reduced" />

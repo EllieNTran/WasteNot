@@ -1,4 +1,4 @@
-import { StyleSheet, Image, View, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';

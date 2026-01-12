@@ -1,4 +1,4 @@
-import { Image, ImageProps, ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image, ImageProps, ImageSourcePropType } from 'react-native';
 
 interface IconProps {
   source: ImageSourcePropType;

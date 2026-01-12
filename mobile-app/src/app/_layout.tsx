@@ -1,12 +1,11 @@
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { SplashScreen, Stack, usePathname } from 'expo-router';
+import { SplashScreen, Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useColorScheme, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRouter, useSegments } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/src/components/toast';
 import { AuthProvider, useAuth } from '@/src/contexts/authContext';
@@ -49,8 +48,7 @@ function RootLayoutNav() {
     } else if (session && inAuthGroup) {
       router.replace('/home');
     }
-  }, [session, segments, loading]);
-
+  }, [session, segments, loading, router]);
 
   if (!fontsLoaded && !fontError) return null;
 

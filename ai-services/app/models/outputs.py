@@ -13,8 +13,12 @@ class RecipeGenerationOutput(BaseModel):  # pylint:disable=too-few-public-method
     """
 
     title: str = Field(..., example="Grilled Chicken with Cauliflower and Broccoli")
+    description: str = Field(
+        ...,
+        example="A healthy and delicious grilled chicken recipe served with steamed cauliflower and broccoli.",
+    )
     cooking_time: str = Field(..., example="30 minutes")
-    ingredients: List[str] = Field(
+    ingredient_parts: List[str] = Field(
         ...,
         example=[
             "chicken breast",
@@ -23,6 +27,17 @@ class RecipeGenerationOutput(BaseModel):  # pylint:disable=too-few-public-method
             "olive oil",
             "salt",
             "pepper",
+        ],
+    )
+    ingredients: List[str] = Field(
+        ...,
+        example=[
+            "200g chicken breast",
+            "1 head cauliflower",
+            "1 head broccoli",
+            "2 tablespoons olive oil",
+            "1 teaspoon salt",
+            "1/2 teaspoon pepper",
         ],
     )
     instructions: List[str] = Field(
@@ -34,4 +49,7 @@ class RecipeGenerationOutput(BaseModel):  # pylint:disable=too-few-public-method
             "Steam the cauliflower and broccoli until tender.",
             "Serve the grilled chicken with the steamed vegetables on the side.",
         ],
+    )
+    image_url: str | None = Field(
+        None, example="https://www.example.com/images/grilled_chicken.jpg"
     )

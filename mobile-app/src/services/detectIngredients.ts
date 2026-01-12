@@ -53,7 +53,7 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
     } as any);
   }
 
-  console.log('Sending request to API...');
+  console.log('Sending request to API for ingredient detection...');
   
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
@@ -78,7 +78,7 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
     }
 
     const result = await response.json();
-    console.log('Ingredient detection successful:', result);
+    console.log('Ingredient detection successful');
     return result;
   } catch (error) {
     clearTimeout(timeoutId);

@@ -20,13 +20,8 @@ const generateRecipe = async ({
   mealType,
   cookingTime,
 }: GenerateRecipeRequest): Promise<GenerateRecipeResponse> => {
-  console.log('Sending request to API...');
-  console.log('Ingredients:', ingredients);
-  console.log('Dietary Preferences:', dietaryPreferences);
-  console.log('Allergies:', allergies);
-  console.log('Meal Type:', mealType);
-  console.log('Cooking Time:', cookingTime);
-  
+  console.log('Sending request to API for recipe generation...');
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
   
@@ -37,9 +32,7 @@ const generateRecipe = async ({
     meal_type: mealType,
     cooking_time: cookingTime,
   };
-  
-  console.log('Request body:', JSON.stringify(requestBody));
-  
+
   try {
     const response = await apiFetch('ai/generate-recipe', {
       method: 'POST',
@@ -52,7 +45,6 @@ const generateRecipe = async ({
 
     clearTimeout(timeoutId);
     console.log('Response received:', response.status);
-    console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers.entries())));
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -61,11 +53,10 @@ const generateRecipe = async ({
     }
 
     const responseText = await response.text();
-    console.log('Raw response text:', responseText);
-    
     const result = responseText ? JSON.parse(responseText) : {};
-    console.log('Parsed result:', result);
+
     return result;
+
   } catch (error) {
     clearTimeout(timeoutId);
     

@@ -86,7 +86,6 @@ export default function ScanIngredientsScreen() {
       }
     });
 
-    console.log('Uploading file:', file);
     detectIngredientsMutation.mutate(file, {
       onSuccess: (data) => {
         console.log('Upload success:', data);
