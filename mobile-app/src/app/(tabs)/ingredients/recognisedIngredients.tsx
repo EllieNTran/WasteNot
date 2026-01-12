@@ -6,44 +6,22 @@ import { Icon } from '@/src/components/icon';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { BackArrow } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function RecognisedIngredientsScreen() {
   const params = useLocalSearchParams();
-  const { uploadData, isLoading: isLoadingParam, error: errorParam } = params;
-  const [recognisedIngredients, setRecognisedIngredients] = useState<any[]>([]);
-  const [loading, setLoading] = useState(isLoadingParam === 'true');
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isLoadingParam === 'true') {
-      setLoading(true);
-      setError(null);
-    } else if (isLoadingParam === 'false') {
-      setLoading(false);
-    }
-  }, [isLoadingParam]);
-
-  useEffect(() => {
-    if (errorParam) {
-      setError(errorParam as string);
-      setLoading(false);
-    }
-  }, [errorParam]);
-
-  useEffect(() => {
-    if (uploadData) {
+  const ingredients = useMemo(() => {
+    if (params.ingredientsData && typeof params.ingredientsData === 'string') {
       try {
-        const data = JSON.parse(uploadData as string);
-        setRecognisedIngredients(data.ingredients || []);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error parsing upload data:', err);
-        setError('Failed to load recognized ingredients');
-        setLoading(false);
+        return JSON.parse(params.ingredientsData);
+      } catch (e) {
+        console.error('Failed to parse ingredients data:', e);
+        return null;
       }
     }
-  }, [uploadData]);
+    return null;
+  }, [params.ingredientsData]);
 
   return (
     <MainView>
@@ -60,26 +38,17 @@ export default function RecognisedIngredientsScreen() {
         </View>
       </View>
       <View style={styles.ingredientsContainer}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.light.background} />
-            <BodyText color={Colors.light.text} style={styles.loadingText}>
-              Detecting ingredients...
-            </BodyText>
-          </View>
-        ) : error ? (
-          <BodyText color={Colors.light.text}>{error}</BodyText>
-        ) : recognisedIngredients.length === 0 ? (
+        {!ingredients || ingredients.length === 0 ? (
           <BodyText color={Colors.light.text}>No ingredients detected. Try again!</BodyText>
         ) : (
-          recognisedIngredients.map((ingredient, index) => (
+          ingredients.map((item: any, index: number) => (
             <IngredientCard 
               key={index}
-              id={ingredient.id}
-              ingredient={ingredient.name || 'Unknown'} 
-              quantity={ingredient.amount || 'N/A'} 
-              expirationDate={ingredient.expiry_date || 'No date'} 
-              type={ingredient.type}
+              id={item.id || `temp-${index}`}
+              ingredient={item.ingredient || 'Unknown'} 
+              quantity="N/A"
+              expirationDate="No date"
+              type="other"
             />
           ))
         )}

@@ -51,8 +51,8 @@ export default function GenerateRecipeScreen() {
           if (!data || !data.recipe) {
             Toast.show({
               type: 'error',
-              text1: 'Generation Failed',
-              text2: 'No recipe data received from server',
+              text1: 'Recipe Generation Failed',
+              text2: 'No recipe generated',
             });
             return;
           }
@@ -68,7 +68,7 @@ export default function GenerateRecipeScreen() {
           console.error('Error generating recipe:', error);
           Toast.show({
             type: 'error',
-            text1: 'Generation Failed',
+            text1: 'Recipe Generation Failed',
             text2: error.message || 'Failed to generate recipe',
           });
         },
@@ -450,5 +450,5 @@ const styles = StyleSheet.create({
   },
   loadingIndicator: {
     transform: [{ scale: 3 }],
-  }
+  },
 });

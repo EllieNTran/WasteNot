@@ -1,4 +1,4 @@
-import { StyleSheet, View, Pressable, Modal, Image } from 'react-native';
+import { StyleSheet, View, Pressable, Modal, Image, ActivityIndicator } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title, Subtitle } from '@/src/components/typography';
@@ -79,28 +79,33 @@ export default function ScanIngredientsScreen() {
 
     setShowPreview(false);
     setPhoto(null);
-    router.push({
-      pathname: '/ingredients/recognisedIngredients',
-      params: { 
-        isLoading: 'true'
-      }
-    });
 
     detectIngredientsMutation.mutate(file, {
-      onSuccess: (data) => {
-        console.log('Upload success:', data);
-        router.setParams({
-          uploadData: JSON.stringify(data),
-          isLoading: 'false'
-        });
-      },
-      onError: (error) => {
-        console.error('Upload error:', error);
-        router.setParams({
-          error: error.message,
-          isLoading: 'false'
-        });
-      },
+        onSuccess: (data) => {
+          if (!data || !data.ingredients) {
+            Toast.show({
+              type: 'error',
+              text1: 'Ingredient Detection Failed',
+              text2: 'No ingredients detected',
+            });
+            return;
+          }
+          
+          router.push({
+            pathname: '/ingredients/recognisedIngredients',
+            params: {
+              ingredientsData: JSON.stringify(data.ingredients),
+            },
+          });
+        },
+        onError: (error) => {
+          console.error('Error generating recipe:', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Ingredient Detection Failed',
+            text2: error.message || 'Failed to generate recipe',
+          });
+        },
     });
   };
 
@@ -132,47 +137,58 @@ export default function ScanIngredientsScreen() {
         </BodyText>
       </View>
 
-      {!permission.granted ? (
-        <Pressable style={styles.permissionButton} onPress={requestPermission}>
-          <Icon source={GreenCamera} size={120} />
-          <BodyText color={Colors.light.text} style={styles.instruction}>
-            Take a Photo
+      {detectIngredientsMutation.isPending ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.icon} style={styles.loadingIndicator} />
+          <BodyText color={Colors.light.text} style={styles.loadingText}>
+            Detecting ingredients...
           </BodyText>
-          <BodyText color={Colors.light.grey} style={styles.detailText}>
-            Point your camera at your fridge or cupboard
-          </BodyText>
-        </Pressable>
-      ) : (
-        <View style={styles.cameraOuterBorder}>
-          <View style={styles.cameraContainer}>
-            <CameraView style={styles.camera} facing="back" ref={cameraRef}>
-              <View style={styles.cameraOverlay}>
-                <Pressable style={styles.captureButton} onPress={handleCapture}>
-                  <Icon source={Camera} size={40} />
-                </Pressable>
-              </View>
-            </CameraView>
-          </View>
         </View>
-      )}
+      ) : (
+        <>
+          {!permission.granted ? (
+            <Pressable style={styles.permissionButton} onPress={requestPermission}>
+              <Icon source={GreenCamera} size={120} />
+              <BodyText color={Colors.light.text} style={styles.instruction}>
+                Take a Photo
+              </BodyText>
+              <BodyText color={Colors.light.grey} style={styles.detailText}>
+                Point your camera at your fridge or cupboard
+              </BodyText>
+            </Pressable>
+          ) : (
+            <View style={styles.cameraOuterBorder}>
+              <View style={styles.cameraContainer}>
+                <CameraView style={styles.camera} facing="back" ref={cameraRef}>
+                  <View style={styles.cameraOverlay}>
+                    <Pressable style={styles.captureButton} onPress={handleCapture}>
+                      <Icon source={Camera} size={40} />
+                    </Pressable>
+                  </View>
+                </CameraView>
+              </View>
+            </View>
+          )}
 
-      <View style={styles.optionsContainer}>
-        <Subtitle color={Colors.light.text} style={styles.chooseFromText}>
-          Or choose from:
-        </Subtitle>
-        <Card 
-          iconSource={Gallery} 
-          text="Upload From Gallery" 
-          caption="Select existing photos" 
-          onPress={pickImage} 
-        />
-        <Card 
-          iconSource={Keyboard} 
-          text="Enter Manually" 
-          caption="Type your ingredients" 
-          onPress={() => {}} 
-        />
-      </View>
+          <View style={styles.optionsContainer}>
+            <Subtitle color={Colors.light.text} style={styles.chooseFromText}>
+              Or choose from:
+            </Subtitle>
+            <Card 
+              iconSource={Gallery} 
+              text="Upload From Gallery" 
+              caption="Select existing photos" 
+              onPress={pickImage} 
+            />
+            <Card 
+              iconSource={Keyboard} 
+              text="Enter Manually" 
+              caption="Type your ingredients" 
+              onPress={() => {}} 
+            />
+          </View>
+        </>
+      )}
 
       <Modal
         visible={showPreview}
@@ -199,7 +215,7 @@ export default function ScanIngredientsScreen() {
               </Pressable>
               <Pressable style={styles.confirmButton} onPress={handleConfirmPhoto}>
                 <BodyText color={Colors.light.text}>
-                  Yes, Scan
+                  Confirm
                 </BodyText>
               </Pressable>
             </View>
@@ -351,5 +367,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     paddingHorizontal: 20,
-  }
+  },
+  loadingContainer: {
+    flex: 1,
+    marginTop: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 20,
+    fontWeight: '500',
+    marginTop: 30,
+  },
+  loadingIndicator: {
+    transform: [{ scale: 3 }],
+  },
 });
