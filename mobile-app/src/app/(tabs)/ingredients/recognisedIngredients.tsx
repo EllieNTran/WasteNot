@@ -4,7 +4,7 @@ import { MainView } from '@/src/components/mainView';
 import { BodyText, Title } from '@/src/components/typography';
 import { Icon } from '@/src/components/icon';
 import { Link, useLocalSearchParams } from 'expo-router';
-import { Vegetable, BackArrow } from '@/src/assets/icons';
+import { BackArrow } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
 import { useEffect, useState } from 'react';
 
@@ -35,7 +35,6 @@ export default function RecognisedIngredientsScreen() {
     if (uploadData) {
       try {
         const data = JSON.parse(uploadData as string);
-        console.log('Received upload data:', data);
         setRecognisedIngredients(data.ingredients || []);
         setLoading(false);
       } catch (err) {

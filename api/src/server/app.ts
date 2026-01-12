@@ -21,6 +21,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 API server running on http://0.0.0.0:${PORT}`);
-  console.log(`📱 Access from network: http://192.168.0.6:${PORT}`);
+  console.log(`API server running on http://0.0.0.0:${PORT}`);
+  console.log(`Access from network: http://192.168.0.6:${PORT}`);
 });

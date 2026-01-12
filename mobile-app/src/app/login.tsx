@@ -110,7 +110,7 @@ export default function LoginScreen() {
         <Link href="/signup" style={styles.link}>
           <View style={styles.signUpContainer}>
             <BodyText color={Colors.light.grey} style={styles.signUpText}>
-              Don't have an account?
+              {"Don't have an account?"}
             </BodyText>
             <BodyText color={Colors.light.secondaryGreen} style={styles.optionText}>
               Sign up

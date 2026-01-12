@@ -1,4 +1,4 @@
-import { Text, StyleSheet, TextProps } from 'react-native';
+import { Text, TextProps } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 
 interface TypographyProps extends TextProps {

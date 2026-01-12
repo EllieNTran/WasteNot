@@ -1,5 +1,5 @@
 import { StyleSheet, View, Pressable, Platform, Modal, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
@@ -15,7 +15,6 @@ import { useAddIngredient, useUpdateIngredient } from '@/src/hooks/useIngredient
 import { useAuth } from '@/src/contexts/authContext';
 import { IngredientType } from '@/src/types/database.types';
 import { formatDate, formatDateForDB } from '@/src/utils/date';
-import { useEffect } from 'react';
 
 export default function AddIngredientScreen() {
   const router = useRouter();

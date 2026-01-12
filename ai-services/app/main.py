@@ -1,8 +1,14 @@
+import logging
+import logging.config
 from fastapi import FastAPI
 
 from app.models.requests import RecipeGenerationRequest, IngredientDetectionRequest
-from app.services.recipe_generation import run_recipe_generation_agent
+from app.services.recipe_generation import run_recipe_generation
 from app.services.ingredient_detection import run_ingredient_detection
+from app.services.logger import LogConfig
+
+logging.config.dictConfig(LogConfig().model_dump())
+logger = logging.getLogger("template")
 
 app = FastAPI()
 
@@ -21,7 +27,8 @@ async def generate_recipe(request: RecipeGenerationRequest):
         The generated recipe as a string
     """
     try:
-        response = run_recipe_generation_agent(
+        logger.info("Received request for recipe generation")
+        response = run_recipe_generation(
             request.ingredients,
             request.dietary_preferences,
             request.allergies,
@@ -47,7 +54,7 @@ async def detect_ingredients(request: IngredientDetectionRequest):
         The detected ingredients as a list
     """
     try:
-        print("Received request for ingredient detection: ", request)
+        logger.info("Received request for ingredient detection")
         response = run_ingredient_detection(request.image)
         return {"ingredients": response}
     except Exception as e:

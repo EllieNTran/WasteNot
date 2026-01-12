@@ -1,8 +1,8 @@
-import { StyleSheet, Image, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Image, View, Pressable } from 'react-native';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Subtitle } from '@/src/components/typography';
-import { AddMissing, BackArrow, Checked, GreyClock, Save } from '@/src/assets/icons';
+import { AddMissing, BackArrow, Checked, GreyClock, Save, Heart } from '@/src/assets/icons';
 import { Icon } from '@/src/components/icon';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { StyledButton } from '@/src/components/styledButton';
@@ -30,6 +30,7 @@ export default function RecipeScreen() {
   const cookingTime = recipe?.cooking_time || 'N/A';
   const ingredients = recipe?.ingredients || [];
   const instructions = recipe?.instructions || [];
+  const imageUrl = recipe?.image_url;
 
   const createdDate = new Date();
 
@@ -64,10 +65,15 @@ export default function RecipeScreen() {
           <Icon source={Save} size={23} />
         </Pressable>
       </View>
-      <Image
-        source={require('@/src/assets/images/chicken-rice.jpg')}
-        style={styles.image}
-      />
+      <View style={styles.imageContainer}>
+        <Image
+          source={imageUrl ? { uri: imageUrl } : require('@/src/assets/images/chicken-rice.jpg')}
+          style={styles.image}
+        />
+        <View style={styles.heartCircle}>
+          <Icon source={Heart} size={21} />
+        </View>
+      </View>
 
       <View style={styles.header}>
         <Subtitle color={Colors.light.text} style={styles.title}>{recipeName}</Subtitle>
@@ -143,6 +149,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: Colors.light.text,
     borderWidth: 1,
+  },
+  imageContainer: {
+    width: '100%',
+    position: 'relative',
+  },
+  heartCircle: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 26,

@@ -1,5 +1,3 @@
-import { red } from "react-native-reanimated/lib/typescript/Colors";
-
 const tintColorLight = '#0a7ea4';
 const accentColor = '#556B61';
 const greyColor = '#989898';
@@ -20,7 +18,7 @@ export const Colors = {
     lightBeige: lightBeigeColor,
     secondaryGreen: secondaryGreenColor,
     darkGrey: darkGreyColor,
-    red: redColor
+    red: redColor,
   },
   dark: {
     text: '#FFFFFF',

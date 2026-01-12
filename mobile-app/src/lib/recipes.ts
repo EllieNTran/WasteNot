@@ -1,10 +1,8 @@
 import { supabase } from './supabase';
 import { Database } from '@/src/types/database.types';
 
-type Recipe = Database['public']['Tables']['recipes']['Row'];
 type RecipeInsert = Database['public']['Tables']['recipes']['Insert'];
 type RecipeUpdate = Database['public']['Tables']['recipes']['Update'];
-type RecipeIngredientInsert = Database['public']['Tables']['recipe_ingredients']['Insert'];
 
 export const getRecipes = async (userId: string) => {
   const { data, error } = await supabase
@@ -67,7 +65,7 @@ export const getRecipesByMealType = async (userId: string, mealType: string) => 
 
 export const addRecipe = async (
   recipe: RecipeInsert,
-  ingredients: Array<{ name: string; amount: string; ingredient_id?: string }>
+  ingredients: { name: string; amount: string; ingredient_id?: string }[]
 ) => {
   const { data: recipeData, error: recipeError } = await supabase
     .from('recipes')

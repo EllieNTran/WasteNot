@@ -47,7 +47,6 @@ export default function GenerateRecipeScreen() {
       },
       {
         onSuccess: (data) => {
-          console.log('Recipe generated:', data);
           
           if (!data || !data.recipe) {
             Toast.show({
