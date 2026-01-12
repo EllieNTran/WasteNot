@@ -21,7 +21,7 @@ export default function IngredientsScreen() {
     : ingredients.filter(ing => ing.type === selectedFilter);
 
   return (
-    <MainView>
+    <MainView style={styles.container}>
       <View style={styles.titleContainer}>
         <Link href="/ingredients/ingredient" asChild>
           <Pressable>
@@ -79,6 +79,9 @@ export default function IngredientsScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 60,
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
