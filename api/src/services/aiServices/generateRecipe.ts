@@ -29,8 +29,8 @@ const generateRecipe = async (
 
     return response.data.recipe;
   } catch (error: any) {
-    console.error('Error generating recipe:', error.message);
-    return null
+    logger.error('Error generating recipe:', error.message);
+    throw error;
   }
 }
 

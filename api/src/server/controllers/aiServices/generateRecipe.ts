@@ -15,27 +15,38 @@ const controller = async (req: Request): Promise<ControllerResult> => {
     }
   }
 
-  const recipe = await generateRecipe(
-    ingredients,
-    dietary_preferences || [],
-    allergies || [],
-    meal_type || '',
-    cooking_time || ''
-  )
-  logger.debug('Generated recipe', { recipe })
+  try {
+    const recipe = await generateRecipe(
+      ingredients,
+      dietary_preferences || [],
+      allergies || [],
+      meal_type || '',
+      cooking_time || ''
+    )
+    logger.debug('Generated recipe', { recipe })
 
-  if (recipe === null) {
+    if (!recipe) {
+      logger.error('Recipe generation returned null or undefined');
+      return {
+        status: 500,
+        body: {
+          message: 'Failed to generate recipe',
+        },
+      }
+    }
+
+    return {
+      status: 200,
+      body: { recipe },
+    }
+  } catch (error: any) {
+    logger.error('Error in generateRecipe controller:', error);
     return {
       status: 500,
       body: {
-        message: 'Failed to generate recipe',
+        message: error.message || 'Failed to generate recipe',
       },
     }
-  }
-
-  return {
-    status: 200,
-    body: { recipe },
   }
 }
 
