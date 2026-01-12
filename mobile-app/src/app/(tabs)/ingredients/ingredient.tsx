@@ -38,10 +38,12 @@ export default function AddIngredientScreen() {
       if (params.name) setName(params.name as string);
       if (params.amount) setAmount(params.amount as string);
       if (params.type) setSelectedType(params.type as IngredientType);
-      if (params.expiry_date) {
+      if (params.expiry_date && params.expiry_date !== 'No date') {
         const date = new Date(params.expiry_date as string);
-        setExpiryDate(date);
-        setTempDate(date);
+        if (!isNaN(date.getTime())) {
+          setExpiryDate(date);
+          setTempDate(date);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

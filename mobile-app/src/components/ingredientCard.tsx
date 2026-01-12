@@ -18,16 +18,23 @@ interface IngredientCardProps {
 }
 
 export default function IngredientCard({ id, ingredient, quantity, expirationDate, type }: IngredientCardProps) {
-  const [daysLeft, setDaysLeft] = useState<number | null>(null);
+  const [daysLeft, setDaysLeft] = useState<number | string | null>(null);
   const [iconSource, setIconSource] = useState<ImageSourcePropType>(Ingredients);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [formattedExpirationDate, setFormattedExpirationDate] = useState<string | null>(null);
   const router = useRouter();
   const deleteIngredientMutation = useDeleteIngredient();
   const markAsUsedMutation = useMarkAsUsed();
 
   useEffect(() => {
-    const days = calculateDaysLeft(expirationDate);
-    setDaysLeft(days);
+    if (expirationDate !== 'No date') {
+      const days = calculateDaysLeft(expirationDate);
+      setDaysLeft(days);
+      setFormattedExpirationDate(formatDate(new Date(expirationDate)));
+    } else {
+      setDaysLeft('?');
+      setFormattedExpirationDate('Unknown');
+    }
   }, [expirationDate]);
 
   useEffect(() => {
@@ -93,7 +100,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
       <View style={styles.expirationContainer}>
         <View style={styles.expirationInfo}>
           <Icon source={GreenCalendar} size={15} />
-          <BodyText style={styles.expirationText}>Expires: {formatDate(new Date(expirationDate))}</BodyText>
+          <BodyText style={styles.expirationText}>Expires: {formattedExpirationDate}</BodyText>
         </View>
         <View style={styles.remainingDaysContainer}>
           <Icon source={BlackClock} size={13} />

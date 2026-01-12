@@ -20,54 +20,73 @@ const generateRecipe = async ({
   mealType,
   cookingTime,
 }: GenerateRecipeRequest): Promise<GenerateRecipeResponse> => {
-  console.log('Sending request to API for recipe generation...');
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+  const MAX_ATTEMPTS = 3;
+  const RETRY_DELAY_MS = 60000; // 1 minute
   
-  const requestBody = {
-    ingredients,
-    dietary_preferences: dietaryPreferences,
-    allergies,
-    meal_type: mealType,
-    cooking_time: cookingTime,
-  };
+  let lastError: Error | null = null;
 
-  try {
-    const response = await apiFetch('ai/generate-recipe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-      signal: controller.signal,
-    });
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      console.log(`Sending request to API for recipe generation... (Attempt ${attempt}/${MAX_ATTEMPTS})`);
 
-    clearTimeout(timeoutId);
-    console.log('Response received:', response.status);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      
+      const requestBody = {
+        ingredients,
+        dietary_preferences: dietaryPreferences,
+        allergies,
+        meal_type: mealType,
+        cooking_time: cookingTime,
+      };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Recipe generation failed:', errorText);
-      throw new Error(`Recipe generation failed: ${errorText}`);
+      try {
+        const response = await apiFetch('ai/generate-recipe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+        console.log('Response received:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Recipe generation failed:', errorText);
+          throw new Error(`Recipe generation failed: ${errorText}`);
+        }
+
+        const responseText = await response.text();
+        const result = responseText ? JSON.parse(responseText) : {};
+
+        return result;
+
+      } catch (error) {
+        clearTimeout(timeoutId);
+        
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.error('Recipe generation timed out after 2 minutes');
+          throw new Error('Recipe generation is taking longer than expected. Please try again later.');
+        }
+        
+        throw error;
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, lastError.message);
+      
+      if (attempt < MAX_ATTEMPTS) {
+        console.log(`Retrying in ${RETRY_DELAY_MS / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      }
     }
-
-    const responseText = await response.text();
-    const result = responseText ? JSON.parse(responseText) : {};
-
-    return result;
-
-  } catch (error) {
-    clearTimeout(timeoutId);
-    
-    if (error instanceof Error && error.name === 'AbortError') {
-      console.error('Recipe generation timed out after 2 minutes');
-      throw new Error('Recipe generation is taking longer than expected. Please try again later.');
-    }
-    
-    console.error('Recipe generation request error:', error);
-    throw error;
   }
+  
+  console.error(`All ${MAX_ATTEMPTS} attempts failed`);
+  throw lastError || new Error('Recipe generation failed after multiple attempts');
 };
 
 export const useGenerateRecipe = (options?: any) =>
