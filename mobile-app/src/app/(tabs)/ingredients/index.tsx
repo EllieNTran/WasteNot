@@ -58,7 +58,7 @@ export default function IngredientsScreen() {
           <BodyText color={Colors.light.text}>{error.message}</BodyText>
         ) : filteredIngredients.length === 0 ? (
           <BodyText color={Colors.light.text}>
-            {selectedFilter === 'All' ? 'No ingredients yet. Add some!' : `No ${selectedFilter.toLowerCase()} found.`}
+            {selectedFilter === 'All' ? 'No ingredients yet.' : `No ${selectedFilter.toLowerCase()} found.`}
           </BodyText>
         ) : (
           filteredIngredients.map((ingredient) => (
