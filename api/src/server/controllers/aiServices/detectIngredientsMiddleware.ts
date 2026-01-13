@@ -37,13 +37,13 @@ const multipartParser = multer({
 }).single('file')
 
 const catchValidationErrors = (error: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.warn('Malformed multipart data when trying to upload image', { operationName: 'MULTER_VAlIDATION', error: error.message })
+  logger.warn('Malformed multipart data when trying to detect ingredients', { operationName: 'MULTER_VAlIDATION', error: error.message })
   res.sendStatus(400)
 }
 
 const fileRequired = (req: Request, res: Response, next: NextFunction) => {
   if (!req.file) {
-    logger.warn('Attempted to upload an image without a file', { operationName: 'FILE_VALIDATION' })
+    logger.warn('Attempted to detect ingredients without a file', { operationName: 'FILE_VALIDATION' })
     res.sendStatus(400)
     return
   }

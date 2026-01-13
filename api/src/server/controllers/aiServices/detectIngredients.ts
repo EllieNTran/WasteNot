@@ -10,15 +10,6 @@ declare module 'express' {
 }
 
 const controller = async (req: Request): Promise<ControllerResult> => {
-  if (!req.file) {
-    return {
-      status: 400,
-      body: {
-        message: 'File is required',
-      },
-    };
-  }
-
   const authHeader = req.headers.authorization;
   const authToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined;
 
