@@ -52,6 +52,12 @@ export default function RecipeScreen() {
     );
   };
 
+  const formatInstruction = (step: string, index: number): string => {
+    const trimmedStep = step.trim();
+    const hasNumberPrefix = /^\d+\.?\s/.test(trimmedStep);
+    return hasNumberPrefix ? trimmedStep : `${index + 1}. ${trimmedStep}`;
+  };
+
   return (
     <MainView>
       <View style={styles.contentWrapper}>
@@ -119,7 +125,7 @@ export default function RecipeScreen() {
         <Subtitle color={Colors.light.text} style={styles.subtitle}>Instructions</Subtitle>
         {instructions.map((step: string, index: number) => (
             <BodyText color={Colors.light.icon} style={styles.item} key={index}>
-              {index + 1}. {step}
+              {formatInstruction(step, index)}
             </BodyText>
           )
         )}
@@ -158,8 +164,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
+    width: 36,
+    height: 36,
     backgroundColor: 'white',
-    borderRadius: 100,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
