@@ -1,4 +1,4 @@
-import { Ingredients, Vegetable, Fruit, Dairy, Meat } from '@/src/assets/icons';
+import { OtherIngredient, Vegetable, Fruit, Dairy, Meat } from '@/src/assets/icons';
 import { ImageSourcePropType } from 'react-native';
 
 export const calculateDaysLeft = (expiration: string) => {
@@ -24,7 +24,7 @@ export const getIconForIngredientType = (type: string) => {
       iconSource = Meat;
       break;
     default:
-      iconSource = Ingredients;
+      iconSource = OtherIngredient;
   }
 
   return iconSource;

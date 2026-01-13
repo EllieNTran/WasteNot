@@ -35,3 +35,4 @@ export const Checked = require('./checked.png');
 export const AddMissing = require('./addMissing.png');
 export const GreyClock = require('./greyClock.png');
 export const Heart = require('./heart.png');
+export const OtherIngredient = require('./otherIngredient.png');
