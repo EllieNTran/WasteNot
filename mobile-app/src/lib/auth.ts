@@ -1,7 +1,8 @@
 import { supabase } from './supabase';
+import { logger } from '@/src/utils/logger';
 
 export const signUp = async (email: string, password: string, fullName: string) => {
-  console.log('Attempting signup for:', email);
+  logger.debug('Attempting signup', { email });
   
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -14,16 +15,16 @@ export const signUp = async (email: string, password: string, fullName: string) 
   });
   
   if (error) {
-    console.error('Signup error:', error);
+    logger.error('Signup error', error);
   } else {
-    console.log('Signup success:', data);
+    logger.info('Signup success', data);
   }
   
   return { data, error };
 };
 
 export const signIn = async (email: string, password: string) => {
-  console.log('Attempting login for:', email);
+  logger.debug('Attempting login', { email });
   
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -31,29 +32,29 @@ export const signIn = async (email: string, password: string) => {
   });
   
   if (error) {
-    console.error('Login error details:', {
+    logger.error('Login error details', {
       message: error.message,
       status: error.status,
       name: error.name,
     });
   } else {
-    console.log('Login success:', data.user?.email);
+    logger.info('Login success', { email: data.user?.email });
   }
   
   return { data, error };
 };
 
 export const signOut = async () => {
-  console.log('signOut: Starting sign out process');
+  logger.debug('Starting sign out process');
   const { error } = await supabase.auth.signOut();
   if (error) {
-    console.log('signOut: Error occurred:', error.message);
+    logger.warn('Sign out error occurred', { message: error.message });
     // If session is already missing, that's fine - user is already logged out
     if (error.message === 'Auth session missing!') {
       return { error: null };
     }
   } else {
-    console.log('signOut: Successfully signed out');
+    logger.info('Successfully signed out');
   }
   return { error };
 };

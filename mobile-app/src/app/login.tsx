@@ -11,6 +11,7 @@ import { Checkbox } from 'expo-checkbox';
 import { Google, Apple } from '@/src/assets/icons';
 import { signIn } from '@/src/lib/auth';
 import Toast from 'react-native-toast-message';
+import { logger } from '@/src/utils/logger';
 
 export default function LoginScreen() {
   const [isChecked, setChecked] = useState(false);
@@ -49,14 +50,14 @@ export default function LoginScreen() {
       return;
     }
 
-    console.log('Attempting login...');
+    logger.debug('Attempting login');
     setLoading(true);
 
     try {
       const { data, error } = await signIn(email.trim().toLowerCase(), password);
 
       if (error) {
-        console.error('Login error:', error);
+        logger.error('Login error', error);
         
         // Handle specific error messages
         if (error.message.includes('Invalid login credentials')) {
@@ -79,7 +80,7 @@ export default function LoginScreen() {
           });
         }
       } else if (data.user) {
-        console.log('Login successful!');
+        logger.info('Login successful', { email: data.user.email });
         Toast.show({
           type: 'success',
           text1: 'Welcome back!',
@@ -87,7 +88,7 @@ export default function LoginScreen() {
         });
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
+      logger.error('Unexpected error', err);
       Toast.show({
         type: 'error',
         text1: 'Error',

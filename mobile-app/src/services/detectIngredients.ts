@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/src/utils/fetch';
 import { supabase } from '@/src/lib/supabase';
+import { logger } from '@/src/utils/logger';
 
 interface DetectIngredientsResponse {
   detectedIngredients: any;
@@ -34,17 +35,17 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      console.log(`Sending request to API for ingredient detection... (Attempt ${attempt}/${MAX_ATTEMPTS})`);
+      logger.debug(`Sending request to API for ingredient detection`, { attempt, maxAttempts: MAX_ATTEMPTS });
       
-      console.log('Getting user session...');
+      logger.debug('Getting user session');
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
-        console.error('Session error:', sessionError);
+        logger.error('Session error', sessionError);
         throw new Error(`Session error: ${sessionError.message}`);
       }
       
-      console.log('Session obtained:', session ? 'Yes' : 'No');
+      logger.debug('Session obtained', { hasSession: !!session });
       
       const formData = new FormData();
       
@@ -74,22 +75,22 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
         });
 
         clearTimeout(timeoutId);
-        console.log('Response received:', response.status);
+        logger.debug('Response received', { status: response.status });
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('Ingredient detection failed:', errorText);
+          logger.error('Ingredient detection failed', { errorText });
           throw new Error(`Ingredient detection failed: ${errorText}`);
         }
 
         const result = await response.json();
-        console.log('Ingredient detection successful');
+        logger.info('Ingredient detection successful');
         return result;
       } catch (error) {
         clearTimeout(timeoutId);
         
         if (error instanceof Error && error.name === 'AbortError') {
-          console.error('Ingredient detection timed out');
+          logger.error('Ingredient detection timed out');
           throw new Error('Ingredient detection request timed out. Please check your connection and try again.');
         }
         
@@ -97,16 +98,16 @@ const detectIngredients = async (file: UploadFile): Promise<DetectIngredientsRes
       }
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      console.error(`Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, lastError.message);
+      logger.error(`Attempt failed`, { attempt, maxAttempts: MAX_ATTEMPTS, error: lastError.message });
       
       if (attempt < MAX_ATTEMPTS) {
-        console.log(`Retrying in ${RETRY_DELAY_MS / 1000} seconds...`);
+        logger.debug(`Retrying`, { delaySeconds: RETRY_DELAY_MS / 1000 });
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
       }
     }
   }
   
-  console.error(`All ${MAX_ATTEMPTS} attempts failed`);
+  logger.error(`All attempts failed`, { maxAttempts: MAX_ATTEMPTS });
   throw lastError || new Error('Ingredient detection failed after multiple attempts');
 };
 
