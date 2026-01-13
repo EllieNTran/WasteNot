@@ -10,7 +10,6 @@ import { TextField } from '../components/textField';
 import { signUp } from '@/src/lib/auth';
 import Toast from 'react-native-toast-message';
 import { Google, Apple } from '@/src/assets/icons';
-import { logger } from '@/src/utils/logger';
 
 export default function SignupScreen() {
   const [fullName, setFullName] = useState('');
@@ -42,7 +41,7 @@ export default function SignupScreen() {
     const { data: { session }, error } = await signUp(email.trim().toLowerCase(), password, fullName.trim());
 
     if (error) {
-      logger.error('Signup error', error);
+      console.error('Signup error:', error);
       Toast.show({
         type: 'error',
         text1: 'Signup Failed',

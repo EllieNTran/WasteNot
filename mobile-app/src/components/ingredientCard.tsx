@@ -65,7 +65,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
         setShowDeleteModal(false);
       },
       onError: (error) => {
-        logger.error('Error deleting ingredient', error);
+        console.error('Error deleting ingredient:', error);
         setShowDeleteModal(false);
       },
     });

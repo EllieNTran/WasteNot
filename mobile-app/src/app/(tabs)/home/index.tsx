@@ -13,7 +13,6 @@ import { useAuth } from '@/src/contexts/authContext';
 import { useExpiringSoon } from '@/src/hooks/useIngredients';
 import { calculateDaysLeft, getIconForIngredientType } from '@/src/utils/ingredients';
 import { StyledButton } from '@/src/components/styledButton';
-import { logger } from '@/src/utils/logger';
 
 const Statistic = ({
   value,
@@ -57,9 +56,9 @@ export default function HomeScreen() {
   const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
-    logger.debug('Logging out');
+    console.log('Logging out...');
     await signOut();
-    logger.info('Sign out complete');
+    console.log('Sign out complete');
     // Don't manually redirect - let the auth context and _layout handle it
   };
 

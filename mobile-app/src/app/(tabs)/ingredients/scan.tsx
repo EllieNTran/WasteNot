@@ -11,7 +11,6 @@ import Card from '@/src/components/card';
 import * as ImagePicker from 'expo-image-picker';
 import { useDetectIngredients } from '../../../services/detectIngredients';
 import Toast from 'react-native-toast-message';
-import { logger } from '@/src/utils/logger';
 
 export default function ScanIngredientsScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -46,7 +45,7 @@ export default function ScanIngredientsScreen() {
         setShowPreview(true);
       }
     } catch (error) {
-      logger.error('Error picking image', error);
+      console.error('Error picking image:', error);
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -100,7 +99,7 @@ export default function ScanIngredientsScreen() {
           });
         },
         onError: (error) => {
-          logger.error('Error detecting ingredients', error);
+          console.error('Error generating recipe:', error);
           Toast.show({
             type: 'error',
             text1: 'Ingredient Detection Failed',

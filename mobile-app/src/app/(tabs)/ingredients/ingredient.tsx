@@ -15,7 +15,6 @@ import { useAddIngredient, useUpdateIngredient } from '@/src/hooks/useIngredient
 import { useAuth } from '@/src/contexts/authContext';
 import { IngredientType } from '@/src/types/database.types';
 import { formatDate, formatDateForDB } from '@/src/utils/date';
-import { logger } from '@/src/utils/logger';
 
 export default function AddIngredientScreen() {
   const router = useRouter();
@@ -84,7 +83,7 @@ export default function AddIngredientScreen() {
       router.back();
     },
     onError: (error: any) => {
-      logger.error(`Error ${action.replace('ed', 'ing')} ingredient`, error);
+      console.error(`Error ${action.replace('ed', 'ing')} ingredient:`, error);
       Toast.show({
         type: 'error',
         text1: 'Error',

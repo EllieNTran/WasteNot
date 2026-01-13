@@ -11,7 +11,6 @@ import { useIngredients } from '@/src/hooks/useIngredients';
 import { useGenerateRecipe } from '@/src/services/generateRecipe';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
-import { logger } from '@/src/utils/logger';
 
 export default function GenerateRecipeScreen() {
   const router = useRouter();
@@ -66,7 +65,7 @@ export default function GenerateRecipeScreen() {
           });
         },
         onError: (error) => {
-          logger.error('Error generating recipe', error);
+          console.error('Error generating recipe:', error);
           Toast.show({
             type: 'error',
             text1: 'Recipe Generation Failed',

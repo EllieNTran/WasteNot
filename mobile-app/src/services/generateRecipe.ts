@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/src/utils/fetch';
-import { logger } from '@/src/utils/logger';
 
 interface GenerateRecipeRequest {
   ingredients: string[];
@@ -28,7 +27,7 @@ const generateRecipe = async ({
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      logger.debug(`Sending request to API for recipe generation`, { attempt, maxAttempts: MAX_ATTEMPTS });
+      console.log(`Sending request to API for recipe generation... (Attempt ${attempt}/${MAX_ATTEMPTS})`);
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
@@ -52,11 +51,11 @@ const generateRecipe = async ({
         });
 
         clearTimeout(timeoutId);
-        logger.debug('Response received', { status: response.status });
+        console.log('Response received:', response.status);
 
         if (!response.ok) {
           const errorText = await response.text();
-          logger.error('Recipe generation failed', { errorText });
+          console.error('Recipe generation failed:', errorText);
           throw new Error(`Recipe generation failed: ${errorText}`);
         }
 
@@ -69,7 +68,7 @@ const generateRecipe = async ({
         clearTimeout(timeoutId);
         
         if (error instanceof Error && error.name === 'AbortError') {
-          logger.error('Recipe generation timed out after 2 minutes');
+          console.error('Recipe generation timed out after 2 minutes');
           throw new Error('Recipe generation is taking longer than expected. Please try again later.');
         }
         
@@ -77,16 +76,16 @@ const generateRecipe = async ({
       }
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      logger.error(`Attempt failed`, { attempt, maxAttempts: MAX_ATTEMPTS, error: lastError.message });
+      console.error(`Attempt ${attempt}/${MAX_ATTEMPTS} failed:`, lastError.message);
       
       if (attempt < MAX_ATTEMPTS) {
-        logger.debug(`Retrying`, { delaySeconds: RETRY_DELAY_MS / 1000 });
+        console.log(`Retrying in ${RETRY_DELAY_MS / 1000} seconds...`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
       }
     }
   }
   
-  logger.error(`All attempts failed`, { maxAttempts: MAX_ATTEMPTS });
+  console.error(`All ${MAX_ATTEMPTS} attempts failed`);
   throw lastError || new Error('Recipe generation failed after multiple attempts');
 };
 
