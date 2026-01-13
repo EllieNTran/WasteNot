@@ -41,7 +41,6 @@ export const useExpiringSoon = () => {
 
 export const useAddIngredient = () => {
   const queryClient = useQueryClient();
-  const { userId } = useAuth();
 
   return useMutation<any, Error, IngredientInsert>({
     mutationFn: async (ingredient: IngredientInsert) => {
@@ -50,15 +49,14 @@ export const useAddIngredient = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY, userId] });
-      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY] });
     },
   });
 };
 
 export const useUpdateIngredient = () => {
   const queryClient = useQueryClient();
-  const { userId } = useAuth();
 
   return useMutation<any, Error, { id: string; updates: IngredientUpdate }>({
     mutationFn: async ({ id, updates }) => {
@@ -67,15 +65,14 @@ export const useUpdateIngredient = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY, userId] });
-      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY] });
     },
   });
 };
 
 export const useDeleteIngredient = () => {
   const queryClient = useQueryClient();
-  const { userId } = useAuth();
 
   return useMutation<any, Error, string>({
     mutationFn: async (id: string) => {
@@ -84,15 +81,14 @@ export const useDeleteIngredient = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY, userId] });
-      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY] });
     },
   });
 };
 
 export const useMarkAsUsed = () => {
   const queryClient = useQueryClient();
-  const { userId } = useAuth();
 
   return useMutation<any, Error, string>({
     mutationFn: async (id: string) => {
@@ -101,8 +97,8 @@ export const useMarkAsUsed = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY, userId] });
-      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY, userId] });
+      queryClient.invalidateQueries({ queryKey: [INGREDIENTS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [EXPIRING_SOON_QUERY_KEY] });
     },
   });
 };

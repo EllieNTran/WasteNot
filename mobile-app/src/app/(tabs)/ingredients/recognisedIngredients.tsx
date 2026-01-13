@@ -1,23 +1,20 @@
 import { StyleSheet, View, Pressable } from 'react-native';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
 import { Colors } from '@/src/constants/theme';
 import { MainView } from '@/src/components/mainView';
 import { BodyText, Title } from '@/src/components/typography';
 import { Icon } from '@/src/components/icon';
-import { Link, useRouter, useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { BackArrow } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
-import { addIngredient } from '@/src/lib/ingredients';
+import { addIngredient, Ingredient } from '@/src/lib/ingredients';
 import { useAuth } from '@/src/contexts/authContext';
-import { StyledButton } from '@/src/components/styledButton';
 
 export default function RecognisedIngredientsScreen() {
   const params = useLocalSearchParams();
   const { user } = useAuth();
-  const router = useRouter();
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasSaved, setHasSaved] = useState(false);
+  const [savedIngredients, setSavedIngredients] = useState<Ingredient[]>([]);
 
   const ingredients = useMemo(() => {
     if (params.ingredientsData && typeof params.ingredientsData === 'string') {
@@ -37,66 +34,63 @@ export default function RecognisedIngredientsScreen() {
     return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   };
 
-  const handleSaveToInventory = async () => {
-    if (!ingredients || !Array.isArray(ingredients) || !user?.id || hasSaved) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      let successCount = 0;
-      let failCount = 0;
-
-      for (const item of ingredients) {
-        try {
-          await addIngredient({
-            user_id: user.id,
-            name: cleanIngredientName(item.ingredient),
-            amount: 'N/A',
-            type: 'Other',
-            expiry_date: null,
-            status: 'available',
-          });
-          successCount++;
-        } catch (error) {
-          console.error(`Failed to add ingredient ${item.ingredient}:`, error);
-          failCount++;
-        }
+  useEffect(() => {
+    const saveIngredients = async () => {
+      if (!ingredients || ingredients.length === 0 || !user?.id) {
+        return;
       }
 
-      setHasSaved(true);
+      try {
+        let successCount = 0;
+        const saved: Ingredient[] = [];
 
-      if (successCount > 0) {
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: `${successCount} ingredient${successCount > 1 ? 's' : ''} added to inventory!`,
-        });
-        
-        setTimeout(() => {
-          router.push('/ingredients');
-        }, 1000);
-      } else {
+        for (const ingredient of ingredients) {
+          try {
+            const { data, error } = await addIngredient({
+              user_id: user.id,
+              name: cleanIngredientName(ingredient.ingredient),
+              amount: 'N/A',
+              type: 'Other',
+              expiry_date: null,
+              status: 'available',
+            });
+            
+            if (data && !error) {
+              saved.push(data);
+              successCount++;
+            }
+          } catch (error) {
+            console.error(`Failed to add ingredient ${ingredient.ingredient}:`, error);
+          }
+        }
+
+        if (successCount > 0) {
+          setSavedIngredients(saved);
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: `${successCount} ingredient${successCount > 1 ? 's' : ''} added to inventory!`,
+          });
+          
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to add ingredients.',
+          });
+        }
+      } catch (error) {
+        console.error('Error saving ingredients:', error);
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Failed to add ingredients. Please try again.',
+          text2: 'An unexpected error occurred.',
         });
-        setHasSaved(false);
       }
-    } catch (error) {
-      console.error('Error saving ingredients:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'An unexpected error occurred.',
-      });
-      setHasSaved(false);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    };
+
+    saveIngredients();
+  }, [ingredients, user]);
 
   return (
     <MainView style={styles.container}>
@@ -117,30 +111,31 @@ export default function RecognisedIngredientsScreen() {
           <View style={styles.noIngredientsContainer}>
             <BodyText color={Colors.light.text}>No ingredients detected.</BodyText>
           </View>
+        ) : savedIngredients.length > 0 ? (
+          savedIngredients.map((item) => (
+            <IngredientCard 
+              key={item.id}
+              id={item.id}
+              ingredient={item.name} 
+              quantity={item.amount || 'N/A'}
+              expirationDate={item.expiry_date || 'No date'}
+              type={item.type?.toLowerCase() || 'other'}
+            />
+          ))
         ) : (
           ingredients.map((item: any, index: number) => (
             <IngredientCard 
               key={index}
-              id={item.id || `temp-${index}`}
+              id={`temp-${index}`}
               ingredient={cleanIngredientName(item.ingredient)} 
               quantity="N/A"
               expirationDate="No date"
               type="other"
+              readOnly
             />
           ))
         )}
       </View>
-      {ingredients && ingredients.length > 0 && (
-        <View style={styles.buttonContainer}>
-          <StyledButton
-            title={hasSaved ? "Saved!" : isSaving ? "Saving..." : "Save to Inventory"}
-            onPress={handleSaveToInventory}
-            disabled={isSaving || hasSaved}
-            buttonStyle={styles.saveButton}
-            textStyle={styles.saveButtonText}
-          />
-        </View>
-      )}
     </MainView>
   );
 }
@@ -185,10 +180,6 @@ const styles = StyleSheet.create({
   noIngredientsContainer: {
     alignItems: 'center',
     paddingTop: 80,
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 20,
   },
   saveButton: {
     marginTop: 0,
