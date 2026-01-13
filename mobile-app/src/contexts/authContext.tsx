@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   userId: string | null;
   loading: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,14 +29,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleSignOut = async () => {
+    console.log('AuthContext: Manually clearing session');
+    await supabase.auth.signOut();
+    setSession(null);
+    setUser(null);
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.email || 'No session');
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.email || 'No session');
       setSession(session);
       setUser(session?.user ?? null);
     });
@@ -48,6 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     user,
     userId: user?.id ?? null,
     loading,
+    signOut: handleSignOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
