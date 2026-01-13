@@ -80,7 +80,9 @@ export default function HomeScreen() {
           </View>
           <Title color={Colors.dark.text}>{loading ? 'Loading...' : fullName}</Title>
         </View>
-        <Icon source={Settings} size={24} style={styles.settingsIcon} />
+        <Pressable onPress={() => router.push('/(tabs)/settings')}>
+          <Icon source={Settings} size={24} style={styles.settingsIcon} />
+        </Pressable>
       </View>
 
       <LinearGradient

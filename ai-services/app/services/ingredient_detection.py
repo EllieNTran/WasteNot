@@ -55,10 +55,12 @@ def extract_ingredients(result):
     predictions = result.get("predictions", {}).get("predictions", [])
     seen = set()
     ingredients = []
+
     for pred in predictions:
         name = pred.get("class")
         confidence = pred.get("confidence", 0)
         if confidence >= 0.7 and name not in seen:
             ingredients.append({"ingredient": name})
             seen.add(name)
+
     return ingredients

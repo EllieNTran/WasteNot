@@ -83,6 +83,12 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => <TabBarIcon name="cart" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

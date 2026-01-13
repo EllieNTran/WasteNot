@@ -67,7 +67,7 @@ export default function RecipeScreen() {
       </View>
       <View style={styles.imageContainer}>
         <Image
-          source={imageUrl ? { uri: imageUrl } : require('@/src/assets/images/chicken-rice.jpg')}
+          source={imageUrl ? { uri: imageUrl } : require('@/src/assets/images/chickenRice.jpg')}
           style={styles.image}
         />
         <View style={styles.heartCircle}>
