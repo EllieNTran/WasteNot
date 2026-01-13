@@ -1,4 +1,4 @@
-fastapi[standard]==0.118.0
+fastapi[standard]==0.128.0
 google-genai==1.57.0
 inference-sdk==0.63.5
 langgraph==1.0.5
