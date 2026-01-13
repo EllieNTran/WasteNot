@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/contexts/authContext';
 import { useExpiringSoon } from '@/src/hooks/useIngredients';
 import { calculateDaysLeft, getIconForIngredientType } from '@/src/utils/ingredients';
+import { StyledButton } from '@/src/components/styledButton';
 
 const Statistic = ({
   value,
@@ -52,7 +53,14 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const { data: expiringSoonIngredients = [] } = useExpiringSoon();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    console.log('Logging out...');
+    await signOut();
+    console.log('Sign out complete');
+    // Don't manually redirect - let the auth context and _layout handle it
+  };
 
   useEffect(() => {
     async function loadProfile() {
@@ -129,6 +137,10 @@ export default function HomeScreen() {
             })
           )}
         </View>
+          {/* <StyledButton 
+            onPress={handleLogout}
+            title="Logout"
+          /> */}
       </View>
     </MainView>
   );
@@ -155,6 +167,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   settingsIcon: {
+    marginTop: -28,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     marginTop: -28,
   },
   impactContainer: {
