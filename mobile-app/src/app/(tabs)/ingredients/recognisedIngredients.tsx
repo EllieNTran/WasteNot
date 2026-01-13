@@ -10,6 +10,7 @@ import { BackArrow } from '@/src/assets/icons';
 import IngredientCard from '@/src/components/ingredientCard';
 import { addIngredient, Ingredient } from '@/src/lib/ingredients';
 import { useAuth } from '@/src/contexts/authContext';
+import { logger } from '@/src/utils/logger';
 
 export default function RecognisedIngredientsScreen() {
   const params = useLocalSearchParams();
@@ -21,7 +22,7 @@ export default function RecognisedIngredientsScreen() {
       try {
         return JSON.parse(params.ingredientsData);
       } catch (e) {
-        console.error('Failed to parse ingredients data:', e);
+        logger.error('Failed to parse ingredients data', e);
         return null;
       }
     }
@@ -60,7 +61,7 @@ export default function RecognisedIngredientsScreen() {
               successCount++;
             }
           } catch (error) {
-            console.error(`Failed to add ingredient ${ingredient.ingredient}:`, error);
+            logger.error(`Failed to add ingredient`, { ingredient: ingredient.ingredient, error });
           }
         }
 
@@ -80,7 +81,7 @@ export default function RecognisedIngredientsScreen() {
           });
         }
       } catch (error) {
-        console.error('Error saving ingredients:', error);
+        logger.error('Error saving ingredients', error);
         Toast.show({
           type: 'error',
           text1: 'Error',

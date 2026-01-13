@@ -8,6 +8,7 @@ import { Link, useLocalSearchParams } from 'expo-router';
 import { StyledButton } from '@/src/components/styledButton';
 import { useIngredients } from '@/src/hooks/useIngredients';
 import { useMemo } from 'react';
+import { logger } from '@/src/utils/logger';
 
 export default function RecipeScreen() {
   const params = useLocalSearchParams();
@@ -18,7 +19,7 @@ export default function RecipeScreen() {
       try {
         return JSON.parse(params.recipeData);
       } catch (e) {
-        console.error('Failed to parse recipe data:', e);
+        logger.error('Failed to parse recipe data', e);
         return null;
       }
     }

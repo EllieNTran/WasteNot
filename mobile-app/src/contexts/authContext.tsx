@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/src/lib/supabase';
+import { logger } from '@/src/utils/logger';
 
 interface AuthContextType {
   session: Session | null;
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   const handleSignOut = async () => {
-    console.log('AuthContext: Manually clearing session');
+    logger.debug('Manually clearing session');
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
@@ -38,14 +39,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session?.user?.email || 'No session');
+      logger.debug('Initial session', { hasSession: !!session, email: session?.user?.email });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session?.user?.email || 'No session');
+      logger.debug('Auth state changed', { event: _event, hasSession: !!session, email: session?.user?.email });
       setSession(session);
       setUser(session?.user ?? null);
     });
