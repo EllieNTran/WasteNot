@@ -1,0 +1,69 @@
+version: 2
+updates:
+  # Enable version updates for npm (mobile-app)
+  - package-ecosystem: "npm"
+    directory: "/mobile-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "etran3"
+    assignees:
+      - "etran3"
+    labels:
+      - "dependencies"
+      - "mobile-app"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    versioning-strategy: increase
+
+  # Enable version updates for npm (api)
+  - package-ecosystem: "npm"
+    directory: "/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "etran3"
+    assignees:
+      - "etran3"
+    labels:
+      - "dependencies"
+      - "api"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    versioning-strategy: increase
+
+  # Enable version updates for pip (ai-services)
+  - package-ecosystem: "pip"
+    directory: "/ai-services"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "etran3"
+    assignees:
+      - "etran3"
+    labels:
+      - "dependencies"
+      - "ai-services"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
