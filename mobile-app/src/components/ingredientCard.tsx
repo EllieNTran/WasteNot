@@ -15,9 +15,10 @@ interface IngredientCardProps {
   quantity: string;
   expirationDate: string;
   type: string;
+  readOnly?: boolean;
 }
 
-export default function IngredientCard({ id, ingredient, quantity, expirationDate, type }: IngredientCardProps) {
+export default function IngredientCard({ id, ingredient, quantity, expirationDate, type, readOnly = false }: IngredientCardProps) {
   const [daysLeft, setDaysLeft] = useState<number | string | null>(null);
   const [iconSource, setIconSource] = useState<ImageSourcePropType>(Ingredients);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -79,7 +80,7 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, readOnly && styles.containerReadOnly]}>
       <View style={styles.topSection}>
         <View style={styles.iconContainer}>
           <Icon source={iconSource} size={40} />
@@ -109,9 +110,11 @@ export default function IngredientCard({ id, ingredient, quantity, expirationDat
           </BodyText>
         </View>
       </View>
-      <Pressable style={styles.markAsUsedButton} onPress={handleMarkAsUsed}>
-        <BodyText style={styles.markAsUsedText}>Mark as Used</BodyText>
-      </Pressable>
+      {!readOnly && (
+        <Pressable style={styles.markAsUsedButton} onPress={handleMarkAsUsed}>
+          <BodyText style={styles.markAsUsedText}>Mark as Used</BodyText>
+        </Pressable>
+      )}
 
       <Modal
         visible={showDeleteModal}
@@ -158,6 +161,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Colors.light.icon,
     gap: 10,
+  },
+  containerReadOnly: {
+    height: 138,
   },
   topSection: {
     flexDirection: 'row',

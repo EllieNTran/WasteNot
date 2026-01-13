@@ -113,10 +113,14 @@ export default function RecipeScreen() {
         const hasIt = hasIngredient(item);
         return (
           <View style={styles.ingredientRow} key={index}>
-            <BodyText color={Colors.light.icon} style={styles.item}>
-              {ingredientText}
-            </BodyText>
-            <Icon source={hasIt ? Checked : AddMissing} size={22} />
+            <View style={styles.ingredientTextContainer}>
+              <BodyText color={Colors.light.icon} style={styles.ingredientItem}>
+                {ingredientText}
+              </BodyText>
+            </View>
+            <View style={styles.ingredientIcon}>
+              <Icon source={hasIt ? Checked : AddMissing} size={22} />
+            </View>
           </View>
         );
       })}
@@ -209,9 +213,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 10,
   },
+  ingredientItem: {
+    fontSize: 14,
+    marginTop: 10,
+  },
+  ingredientTextContainer: {
+    flex: 1,
+    paddingRight: 14,
+  },
   ingredientRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
   },
@@ -238,5 +249,10 @@ const styles = StyleSheet.create({
   },
   instructionsContainer: {
     marginTop: 18,
+  },
+  ingredientIcon: {
+    width: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
